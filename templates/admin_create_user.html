@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Create User - Admin - Typo Payments{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>➕ Create New User</h1>
+    <p>Add a new user account to the system</p>
+</div>
+
+<div class="admin-actions">
+    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">
+        ← Back to User Management
+    </a>
+</div>
+
+<div class="section">
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('admin_create_user') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" required placeholder="Choose a unique username">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" required placeholder="user@example.com">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="full_name">Full Name *</label>
+                    <input type="text" id="full_name" name="full_name" required placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required
+                        placeholder="Choose a secure password">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="is_admin" name="is_admin">
+                    <span>Grant administrator privileges</span>
+                </label>
+                <p class="form-help">Admin users can create users and manage permissions</p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-large">
+                    ➕ Create User
+                </button>
+                <a href="{{ url_for('admin_users') }}" class="btn btn-secondary btn-large">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="info-box">
+    <h3>💡 User Creation Tips</h3>
+    <ul>
+        <li>Choose a strong, unique password for the user</li>
+        <li>Username and email must be unique in the system</li>
+        <li>Admin users will have full access to the admin panel</li>
+        <li>Users can change their password after logging in (if that feature is implemented)</li>
+    </ul>
+</div>
+{% endblock %}

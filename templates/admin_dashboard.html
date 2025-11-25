@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Typo Payments{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>🛡️ Admin Dashboard</h1>
+    <p>System management and user administration</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-icon">👥</span>
+        <h3>Total Users</h3>
+        <p class="stat-number">{{ user_count }}</p>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon">🛡️</span>
+        <h3>Administrators</h3>
+        <p class="stat-number">{{ admin_count }}</p>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon">💳</span>
+        <h3>Total Payments</h3>
+        <p class="stat-number">{{ payment_count }}</p>
+    </div>
+    <div class="stat-card">
+        <span class="stat-icon">💬</span>
+        <h3>Feedback Items</h3>
+        <p class="stat-number">{{ feedback_count }}</p>
+    </div>
+</div>
+
+<div class="admin-actions">
+    <a href="{{ url_for('admin_users') }}" class="btn btn-primary">
+        👥 Manage Users
+    </a>
+    <a href="{{ url_for('admin_create_user') }}" class="btn btn-secondary">
+        ➕ Create New User
+    </a>
+</div>
+
+<div class="section">
+    <h2>Recent Users</h2>
+    {% if users %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Admin</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users[:10] %}
+            <tr>
+                <td>#{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.is_admin %}
+                    <span class="badge badge-admin">Admin</span>
+                    {% else %}
+                    <span class="badge badge-user">User</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if users|length > 10 %}
+    <p class="table-footer">
+        <a href="{{ url_for('admin_users') }}">View all {{ user_count }} users →</a>
+    </p>
+    {% endif %}
+    {% else %}
+    <p class="empty-state">No users found</p>
+    {% endif %}
+</div>
+
+<div class="info-box">
+    <h3>⚠️ Admin Privileges</h3>
+    <p>As an administrator, you can:</p>
+    <ul>
+        <li>View all registered users</li>
+        <li>Create new user accounts</li>
+        <li>Grant or revoke admin privileges</li>
+        <li>Delete user accounts (except your own)</li>
+    </ul>
+</div>
+{% endblock %}

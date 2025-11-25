@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Typo Payments{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>💳 Typo</h1>
+                <span class="tagline">Payment Processing</span>
+            </div>
+            <ul class="nav-menu">
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('search') }}">Search</a></li>
+                <li><a href="{{ url_for('check_status') }}">Status</a></li>
+                <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
+                {% if current_user.is_admin %}
+                <li><a href="{{ url_for('admin_dashboard') }}" class="admin-link">🛡️ Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                <li><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+                {% else %}
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('login') }}" class="btn-primary">Login</a></li>
+                <li><a href="{{ url_for('register') }}" class="btn-secondary">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Typo Payments. All rights reserved.</p>
+            <p><small>⚠️ This is a vulnerable application for educational purposes only</small></p>
+        </div>
+    </footer>
+</body>
+
+</html>

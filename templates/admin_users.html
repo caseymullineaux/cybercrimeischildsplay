@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Admin - Typo Payments{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>👥 User Management</h1>
+    <p>Manage all registered users and permissions</p>
+</div>
+
+<div class="admin-actions">
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+        ← Back to Admin Dashboard
+    </a>
+    <a href="{{ url_for('admin_create_user') }}" class="btn btn-primary">
+        ➕ Create New User
+    </a>
+</div>
+
+<div class="section">
+    <h2>All Users ({{ users|length }})</h2>
+    {% if users %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Admin Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>#{{ user.id }}</td>
+                    <td>
+                        <strong>{{ user.username }}</strong>
+                        {% if user.id == current_user.id %}
+                        <span class="badge badge-current">You</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.full_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_admin %}
+                        <span class="badge badge-admin">Admin</span>
+                        {% else %}
+                        <span class="badge badge-user">User</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at }}</td>
+                    <td class="action-buttons">
+                        {% if user.id != current_user.id %}
+                        <form method="POST" action="{{ url_for('toggle_admin', user_id=user.id) }}"
+                            style="display: inline;">
+                            {% if user.is_admin %}
+                            <button type="submit" class="btn-action btn-warning" title="Revoke admin privileges">
+                                🔓 Revoke Admin
+                            </button>
+                            {% else %}
+                            <button type="submit" class="btn-action btn-success" title="Grant admin privileges">
+                                🔒 Make Admin
+                            </button>
+                            {% endif %}
+                        </form>
+                        <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}"
+                            style="display: inline;"
+                            onsubmit="return confirm('Are you sure you want to delete {{ user.username }}? This action cannot be undone.');">
+                            <button type="submit" class="btn-action btn-danger" title="Delete user">
+                                🗑️ Delete
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted">N/A (You)</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No users found</p>
+    {% endif %}
+</div>
+
+<div class="info-box">
+    <h3>ℹ️ User Management Tips</h3>
+    <ul>
+        <li>You cannot modify your own admin status or delete yourself</li>
+        <li>Granting admin privileges allows users to access this admin panel</li>
+        <li>Deleting a user will also delete all their payments and feedback</li>
+        <li>Admin actions are permanent and cannot be undone</li>
+    </ul>
+</div>
+{% endblock %}

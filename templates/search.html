@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Typo Payments{% endblock %}
+
+{% block content %}
+<div class="section">
+    <h1>🔍 Search Payments</h1>
+    <p>Search through your payment history</p>
+
+    <div class="search-box">
+        <form method="GET" action="{{ url_for('search') }}">
+            <div class="form-group">
+                <input type="text" name="q" placeholder="Search by recipient or description..." class="search-input"
+                    value="{{ query }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+    {% if query %}
+    <!-- VULNERABLE: Reflected XSS - query is rendered without escaping -->
+    <div class="search-results">
+        <h3>Search results for: {{ query|safe }}</h3>
+        <p class="result-count">Found {{ results|length }} result(s)</p>
+    </div>
+
+    {% if results %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Recipient</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in results %}
+            <tr>
+                <td>#{{ payment.id }}</td>
+                <td>{{ payment.recipient }}</td>
+                <td>${{ "%.2f"|format(payment.amount) }}</td>
+                <td>{{ payment.description or 'N/A' }}</td>
+                <td><span class="badge badge-{{ payment.status }}">{{ payment.status }}</span></td>
+                <td>{{ payment.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No payments found matching your search.</p>
+    {% endif %}
+    {% endif %}
+</div>
+
+<div class="vulnerability-note">
+    <h4>⚠️ Demo Vulnerability: Reflected XSS</h4>
+    <p>Try searching for: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code></p>
+    <p>Or try: <code>&lt;img src=x onerror=alert(document.cookie)&gt;</code></p>
+</div>
+{% endblock %}

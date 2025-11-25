@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Typo Payments{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Typo Payments</h1>
+    <p class="subtitle">Fast, Secure, and Reliable Payment Processing</p>
+    <p class="hero-description">
+        Process payments globally with our cutting-edge payment infrastructure.
+        Join thousands of businesses that trust Typo for their payment needs.
+    </p>
+    <div class="cta-buttons">
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Get Started</a>
+        <a href="{{ url_for('login') }}" class="btn btn-secondary btn-large">Sign In</a>
+    </div>
+</div>
+
+<div class="features">
+    <h2>Why Choose Typo?</h2>
+    <div class="feature-grid">
+        <div class="feature-card">
+            <span class="feature-icon">⚡</span>
+            <h3>Lightning Fast</h3>
+            <p>Process payments in milliseconds with our optimized infrastructure</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🔒</span>
+            <h3>Secure</h3>
+            <p>Bank-level security with end-to-end encryption</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🌍</span>
+            <h3>Global Reach</h3>
+            <p>Accept payments from anywhere in the world</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">📊</span>
+            <h3>Analytics</h3>
+            <p>Powerful insights and reporting tools</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

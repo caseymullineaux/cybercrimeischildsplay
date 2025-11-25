@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: typo-postgres
+    environment:
+      POSTGRES_DB: typo_payments
+      POSTGRES_USER: typo_admin
+      POSTGRES_PASSWORD: insecure_password_123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - ./dbconf.ini:/tmp/dbconf.ini:ro
+    networks:
+      - typo-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U typo_admin -d typo_payments" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  typo-payments:
+    build: .
+    container_name: typo-payments-demo
+    ports:
+      - "5000:5000"
+    # Uncomment volumes below for live reload during development
+    # volumes:
+    #   - ./app.py:/app/app.py
+    #   - ./templates:/app/templates
+    #   - ./static:/app/static
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=typo_payments
+      - DB_USER=typo_admin
+      - DB_PASSWORD=insecure_password_123
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - typo-network
+
+networks:
+  typo-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

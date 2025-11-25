@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Typo Payments{% endblock %}
+
+{% block content %}
+<div class="section">
+    <h1>👤 Profile</h1>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">{{ current_user.full_name[0] }}</div>
+            <div class="profile-info">
+                <h2>{{ current_user.full_name }}</h2>
+                <p class="profile-username">@{{ current_user.username }}</p>
+            </div>
+        </div>
+
+        <div class="profile-details">
+            <div class="detail-item">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ current_user.email }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">User ID:</span>
+                <span class="detail-value">#{{ current_user.id }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Session Cookie:</span>
+                <span class="detail-value" id="cookie-value">Check console</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>🍪 Session Information</h3>
+        <p>Your session is managed using cookies. Open the browser console to see your session cookie.</p>
+        <button onclick="showCookies()" class="btn btn-secondary">Show Cookies</button>
+    </div>
+</div>
+
+<script>
+    // VULNERABLE: Demonstrating that cookies are accessible via JavaScript
+    function showCookies() {
+        alert('Your cookies:\\n\\n' + document.cookie);
+        console.log('Session Cookies:', document.cookie);
+        document.getElementById('cookie-value').textContent = document.cookie || 'No cookies found';
+    }
+</script>
+{% endblock %}
