@@ -18,6 +18,8 @@
         </form>
     </div>
 
+
+
     {% if error %}
     <div class="card" style="border-left: 4px solid #e74c3c;">
         <h3 style="color: #e74c3c;">⚠️ Error</h3>
@@ -80,7 +82,41 @@
         </ul>
     </div>
     {% endif %}
+    <!-- SQL Debug Toggle Button -->
+    {% if sql_query %}
+    <div style="text-align: center; margin: 20px 0;">
+        <button onclick="toggleDebug()" class="btn-debug"
+            style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+            🔍 Toggle SQL Debug View
+        </button>
+    </div>
 
+    <!-- SQL Debug Box -->
+    <div id="debugBox" class="card" style="display: none; background-color: #f8f9fa; border-left: 4px solid #007bff;">
+        <h3 style="color: #007bff;">🔍 SQL Debug - What's Happening?</h3>
+        <p style="color: #666; margin-bottom: 10px;">This is the actual SQL query being executed:</p>
+        <pre
+            style="background: #2c3e50; color: #2ecc71; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: 'Courier New', monospace;">{{ sql_query }}</pre>
+        <p style="color: #dc3545; margin-top: 10px;">
+            <strong>⚠️ Vulnerability:</strong> User input is directly inserted into the SQL query without sanitization!
+        </p>
+        <p style="color: #666; margin-top: 10px;">
+            <strong>How to exploit:</strong> Try modifying the "id" parameter in the URL to inject malicious SQL.
+            For example: <code>?id=1 OR 1=1--</code> or <code>?id=1 UNION SELECT ...</code>
+        </p>
+    </div>
+
+    <script>
+        function toggleDebug() {
+            var debugBox = document.getElementById('debugBox');
+            if (debugBox.style.display === 'none') {
+                debugBox.style.display = 'block';
+            } else {
+                debugBox.style.display = 'none';
+            }
+        }
+    </script>
+    {% endif %}
     <div class="card" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
         <h3>💡 SQL Injection Demo Tips</h3>
         <p><strong>This page is vulnerable to SQL injection!</strong></p>

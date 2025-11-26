@@ -170,7 +170,7 @@ def dashboard():
     conn = get_db()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute(
-        "SELECT * FROM payments WHERE user_id = %s ORDER BY created_at DESC",
+        "SELECT * FROM payments WHERE user_id = %s ORDER BY id DESC",
         (current_user.id,),
     )
     payments = cursor.fetchall()
@@ -190,7 +190,8 @@ def search():
     # VULNERABLE: SQL Injection via search query!
     # Building SQL with string formatting allows injection
     # Query structure allows bypassing user_id filter
-    sql = f"SELECT * FROM payments WHERE (recipient LIKE '%{query}%' OR description LIKE '%{query}%') AND user_id = {current_user.id}"
+    # ILIKE is case-insensitive (PostgreSQL)
+    sql = f"SELECT * FROM payments WHERE (recipient ILIKE '%{query}%' OR description ILIKE '%{query}%') AND user_id = {current_user.id}"
     
     try:
         cursor.execute(sql)
@@ -219,6 +220,7 @@ def check_status():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     payment = None
     error = None
+    sql_query = None
 
     if payment_id:
         try:
@@ -226,6 +228,7 @@ def check_status():
             # This allows attackers to extract data from ANY table, not just payments
             # Query structure allows easy exploitation with OR logic
             query = f"SELECT * FROM payments WHERE user_id = {current_user.id} AND id = {payment_id}"
+            sql_query = query  # Store for debug display
             cursor.execute(query)
             payment = cursor.fetchone()
         except Exception as e:
@@ -236,7 +239,7 @@ def check_status():
     conn.close()
 
     return render_template(
-        "status.html", payment=payment, payment_id=payment_id, error=error
+        "status.html", payment=payment, payment_id=payment_id, error=error, sql_query=sql_query
     )
 
 

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS payments (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id),
+    user_name VARCHAR(120),
     recipient VARCHAR(120) NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     description TEXT,
@@ -60,9 +61,17 @@ VALUES (
         TRUE
     ) ON CONFLICT (username) DO NOTHING;
 -- Insert realistic payment data for Alice (user_id = 1)
-INSERT INTO payments (user_id, recipient, amount, description, status)
+INSERT INTO payments (
+        user_id,
+        user_name,
+        recipient,
+        amount,
+        description,
+        status
+    )
 VALUES (
         1,
+        'Alice Anderson',
         'Starbucks',
         5.75,
         'Morning coffee',
@@ -70,6 +79,7 @@ VALUES (
     ),
     (
         1,
+        'Alice Anderson',
         'Amazon',
         49.99,
         'Office supplies',
@@ -77,14 +87,23 @@ VALUES (
     ),
     (
         1,
+        'Alice Anderson',
         'Netflix',
         15.99,
         'Monthly subscription',
         'completed'
     ),
-    (1, 'Uber', 23.50, 'Ride to airport', 'completed'),
     (
         1,
+        'Alice Anderson',
+        'Uber',
+        23.50,
+        'Ride to airport',
+        'completed'
+    ),
+    (
+        1,
+        'Alice Anderson',
         'Whole Foods',
         127.43,
         'Grocery shopping',
@@ -92,31 +111,56 @@ VALUES (
     ),
     (
         1,
+        'Alice Anderson',
         'Shell Gas Station',
         45.00,
         'Fuel',
         'completed'
     ),
-    (1, 'Apple', 1.99, 'App purchase', 'completed'),
     (
         1,
+        'Alice Anderson',
+        'Apple',
+        1.99,
+        'App purchase',
+        'completed'
+    ),
+    (
+        1,
+        'Alice Anderson',
         'Target',
         78.32,
         'Household items',
         'completed'
     ) ON CONFLICT DO NOTHING;
 -- Insert realistic payment data for Bob (user_id = 2)
-INSERT INTO payments (user_id, recipient, amount, description, status)
+INSERT INTO payments (
+        user_id,
+        user_name,
+        recipient,
+        amount,
+        description,
+        status
+    )
 VALUES (
         2,
+        'Bob Builder',
         'Home Depot',
         234.56,
         'Building materials',
         'completed'
     ),
-    (2, 'Chipotle', 12.45, 'Lunch', 'completed'),
     (
         2,
+        'Bob Builder',
+        'Chipotle',
+        12.45,
+        'Lunch',
+        'completed'
+    ),
+    (
+        2,
+        'Bob Builder',
         'Spotify',
         9.99,
         'Music streaming',
@@ -124,14 +168,23 @@ VALUES (
     ),
     (
         2,
+        'Bob Builder',
         'Costco',
         187.92,
         'Bulk shopping',
         'completed'
     ),
-    (2, 'Chevron', 52.00, 'Gas station', 'completed'),
     (
         2,
+        'Bob Builder',
+        'Chevron',
+        52.00,
+        'Gas station',
+        'completed'
+    ),
+    (
+        2,
+        'Bob Builder',
         'Best Buy',
         399.99,
         'Electronics',
@@ -139,15 +192,24 @@ VALUES (
     ),
     (
         2,
+        'Bob Builder',
         'Pizza Hut',
         28.75,
         'Family dinner',
         'completed'
     ) ON CONFLICT DO NOTHING;
 -- Insert realistic payment data for Admin (user_id = 3)
-INSERT INTO payments (user_id, recipient, amount, description, status)
+INSERT INTO payments (
+        user_id,
+        user_name,
+        recipient,
+        amount,
+        description,
+        status
+    )
 VALUES (
         3,
+        'Admin User',
         'AWS',
         450.00,
         'Cloud hosting services',
@@ -155,6 +217,7 @@ VALUES (
     ),
     (
         3,
+        'Admin User',
         'GitHub',
         21.00,
         'Enterprise subscription',
@@ -162,6 +225,7 @@ VALUES (
     ),
     (
         3,
+        'Admin User',
         'Slack',
         80.00,
         'Team communication',
@@ -169,6 +233,7 @@ VALUES (
     ),
     (
         3,
+        'Admin User',
         'DigitalOcean',
         120.00,
         'Server costs',
@@ -176,6 +241,7 @@ VALUES (
     ),
     (
         3,
+        'Admin User',
         'JetBrains',
         149.00,
         'IDE license',
@@ -183,14 +249,23 @@ VALUES (
     ),
     (
         3,
+        'Admin User',
         'Zoom',
         14.99,
         'Pro subscription',
         'completed'
     ),
-    (3, 'Adobe', 52.99, 'Creative Cloud', 'completed'),
     (
         3,
+        'Admin User',
+        'Adobe',
+        52.99,
+        'Creative Cloud',
+        'completed'
+    ),
+    (
+        3,
+        'Admin User',
         'Microsoft 365',
         69.99,
         'Office subscription',

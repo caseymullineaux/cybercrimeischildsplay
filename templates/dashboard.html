@@ -33,6 +33,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>User</th>
                 <th>Recipient</th>
                 <th>Amount</th>
                 <th>Description</th>
@@ -44,6 +45,7 @@
             {% for payment in payments %}
             <tr>
                 <td>#{{ payment.id }}</td>
+                <td>{{ payment.user_name }}</td>
                 <td>{{ payment.recipient }}</td>
                 <td>${{ "%.2f"|format(payment.amount) }}</td>
                 <td>{{ payment.description or 'N/A' }}</td>

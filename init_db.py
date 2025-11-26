@@ -32,6 +32,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS payments (
             id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
+            user_name TEXT,
             amount DECIMAL(10, 2) NOT NULL,
             recipient TEXT NOT NULL,
             description TEXT,
@@ -90,40 +91,34 @@ def init_db():
     # Insert sample payments - More realistic data for each user
     sample_payments = [
         # Alice's payments (user_id = 1)
-        (
-            1,
-            1250.00,
-            "Rent Payment - Landlord",
-            "Monthly rent for November",
-            "completed",
-        ),
-        (1, 89.99, "Netflix Subscription", "Monthly streaming service", "completed"),
-        (1, 45.67, "Electric Company", "Utility bill payment", "completed"),
-        (1, 23.50, "Coffee Shop Downtown", "Weekly coffee expenses", "completed"),
-        (1, 156.78, "Grocery Store", "Weekly shopping", "completed"),
-        (1, 299.99, "Amazon", "Electronics purchase", "pending"),
-        (1, 75.00, "Gym Membership", "Monthly fitness subscription", "completed"),
-        (1, 12.99, "Spotify Premium", "Music streaming", "completed"),
+        (1, "Alice Johnson", 1250.00, "Rent Payment - Landlord", "Monthly rent for November", "completed"),
+        (1, "Alice Johnson", 89.99, "Netflix Subscription", "Monthly streaming service", "completed"),
+        (1, "Alice Johnson", 45.67, "Electric Company", "Utility bill payment", "completed"),
+        (1, "Alice Johnson", 23.50, "Coffee Shop Downtown", "Weekly coffee expenses", "completed"),
+        (1, "Alice Johnson", 156.78, "Grocery Store", "Weekly shopping", "completed"),
+        (1, "Alice Johnson", 299.99, "Amazon", "Electronics purchase", "pending"),
+        (1, "Alice Johnson", 75.00, "Gym Membership", "Monthly fitness subscription", "completed"),
+        (1, "Alice Johnson", 12.99, "Spotify Premium", "Music streaming", "completed"),
         # Bob's payments (user_id = 2)
-        (2, 2100.00, "Mortgage Payment", "Home loan monthly payment", "completed"),
-        (2, 450.00, "Auto Insurance", "Car insurance premium", "completed"),
-        (2, 67.89, "Gas Station", "Fuel for vehicle", "completed"),
-        (2, 123.45, "Internet Provider", "High-speed internet service", "completed"),
-        (2, 89.00, "Phone Bill", "Mobile service payment", "completed"),
-        (2, 234.56, "Restaurant", "Dinner with clients", "pending"),
-        (2, 15.99, "Apple iCloud", "Cloud storage subscription", "completed"),
-        (2, 199.00, "Home Depot", "Home improvement supplies", "completed"),
+        (2, "Bob Smith", 2100.00, "Mortgage Payment", "Home loan monthly payment", "completed"),
+        (2, "Bob Smith", 450.00, "Auto Insurance", "Car insurance premium", "completed"),
+        (2, "Bob Smith", 67.89, "Gas Station", "Fuel for vehicle", "completed"),
+        (2, "Bob Smith", 123.45, "Internet Provider", "High-speed internet service", "completed"),
+        (2, "Bob Smith", 89.00, "Phone Bill", "Mobile service payment", "completed"),
+        (2, "Bob Smith", 234.56, "Restaurant", "Dinner with clients", "pending"),
+        (2, "Bob Smith", 15.99, "Apple iCloud", "Cloud storage subscription", "completed"),
+        (2, "Bob Smith", 199.00, "Home Depot", "Home improvement supplies", "completed"),
         # Admin's payments (user_id = 3)
-        (3, 5000.00, "Company Payroll", "Monthly salary distribution", "completed"),
-        (3, 850.00, "AWS Services", "Cloud hosting infrastructure", "completed"),
-        (3, 299.00, "Office Supplies", "Stationery and equipment", "completed"),
-        (3, 1200.00, "Marketing Agency", "Digital advertising campaign", "pending"),
-        (3, 450.00, "Software Licenses", "Annual subscription renewal", "completed"),
+        (3, "Admin User", 5000.00, "Company Payroll", "Monthly salary distribution", "completed"),
+        (3, "Admin User", 850.00, "AWS Services", "Cloud hosting infrastructure", "completed"),
+        (3, "Admin User", 299.00, "Office Supplies", "Stationery and equipment", "completed"),
+        (3, "Admin User", 1200.00, "Marketing Agency", "Digital advertising campaign", "pending"),
+        (3, "Admin User", 450.00, "Software Licenses", "Annual subscription renewal", "completed"),
     ]
 
     try:
         cursor.executemany(
-            "INSERT INTO payments (user_id, amount, recipient, description, status) VALUES (%s, %s, %s, %s, %s)",
+            "INSERT INTO payments (user_id, user_name, amount, recipient, description, status) VALUES (%s, %s, %s, %s, %s, %s)",
             sample_payments,
         )
     except psycopg2.IntegrityError:
