@@ -191,7 +191,7 @@ def search():
     # Building SQL with string formatting allows injection
     # Query structure allows bypassing user_id filter
     # ILIKE is case-insensitive (PostgreSQL)
-    sql = f"SELECT * FROM payments WHERE (recipient ILIKE '%{query}%' OR description ILIKE '%{query}%') AND user_id = {current_user.id}"
+    sql = f"SELECT * FROM payments WHERE description ILIKE '%{query}%' AND user_id = {current_user.id}"
     
     try:
         cursor.execute(sql)
