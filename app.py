@@ -18,10 +18,19 @@ from flask_login import (
     login_required,
     current_user,
 )
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from functools import wraps
 import os
+import hashlib
+
+# INSECURE: Using MD5 for password hashing (for demo purposes only!)
+def generate_password_hash(password):
+    """VULNERABLE: MD5 hashing is easily crackable - DO NOT USE IN PRODUCTION!"""
+    return hashlib.md5(password.encode()).hexdigest()
+
+def check_password_hash(hash_value, password):
+    """Check if password matches MD5 hash"""
+    return hash_value == hashlib.md5(password.encode()).hexdigest()
 
 app = Flask(__name__)
 # WARNING: This is intentionally insecure for demonstration purposes
@@ -186,6 +195,7 @@ def search():
     query = request.args.get("q", "")
     conn = get_db()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    error = None
 
     # VULNERABLE: SQL Injection via search query!
     # Building SQL with string formatting allows injection
@@ -197,17 +207,16 @@ def search():
         cursor.execute(sql)
         results = cursor.fetchall()
     except Exception as e:
-        # Show errors AND the full SQL query for demo purposes
+        # Show error for demo purposes (helpful for SQLi exploitation)
         results = []
-        flash(f"Search error: {str(e)}", "error")
-        flash(f"SQL Query: {sql}", "error")
+        error = str(e)
     
     cursor.close()
     conn.close()
 
     # VULNERABLE: Directly passing unsanitized query to template where it's rendered with |safe
     # Also pass the SQL query for educational debugging display
-    return render_template("search.html", query=query, results=results, sql_query=sql)
+    return render_template("search.html", query=query, results=results, sql_query=sql, error=error)
 
 
 # VULNERABLE: SQL Injection - payment status check
@@ -227,7 +236,7 @@ def check_status():
             # VULNERABLE: Using string formatting - allows SQL injection!
             # This allows attackers to extract data from ANY table, not just payments
             # Query structure allows easy exploitation with OR logic
-            query = f"SELECT * FROM payments WHERE user_id = {current_user.id} AND id = {payment_id}"
+            query = f"SELECT * FROM payments WHERE id = {payment_id} AND user_id = {current_user.id}"
             sql_query = query  # Store for debug display
             cursor.execute(query)
             payment = cursor.fetchone()

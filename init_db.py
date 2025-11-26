@@ -1,6 +1,11 @@
 import psycopg2
 import os
-from werkzeug.security import generate_password_hash
+import hashlib
+
+# INSECURE: Using MD5 for password hashing (for demo purposes only!)
+def generate_password_hash(password):
+    """VULNERABLE: MD5 hashing is easily crackable - DO NOT USE IN PRODUCTION!"""
+    return hashlib.md5(password.encode()).hexdigest()
 
 
 def init_db():
@@ -59,21 +64,21 @@ def init_db():
         (
             "alice",
             "alice@example.com",
-            generate_password_hash("password123"),
+            generate_password_hash("Welcome123!"),
             "Alice Johnson",
             False,
         ),
         (
             "bob",
             "bob@example.com",
-            generate_password_hash("password123"),
+            generate_password_hash("Summer2023!"),
             "Bob Smith",
             False,
         ),
         (
             "admin",
             "admin@typo.com",
-            generate_password_hash("admin123"),
+            generate_password_hash("P@$$w0rd"),
             "Admin User",
             True,
         ),
@@ -123,6 +128,31 @@ def init_db():
         )
     except psycopg2.IntegrityError:
         print("Sample payments already exist")
+        conn.rollback()
+
+    # Insert sample feedback
+    sample_feedback = [
+        (1, "alice", "Great payment system! Very easy to use."),
+        (2, "bob", "The status page is helpful for tracking payments."),
+        (1, "alice", "I love the search feature! Makes finding old payments super quick."),
+        (3, "admin", "Dashboard looks clean and professional. Nice work on the UI!"),
+        (2, "bob", "Would be nice to have payment categories for better organization."),
+        (1, "alice", "The email notifications are timely and helpful. Keep it up!"),
+        (3, "admin", "Security note: Please ensure all users enable 2FA for their accounts."),
+        (2, "bob", "Can we get a monthly summary report feature? That would be awesome."),
+        (1, "alice", "Payment processing is fast! Usually completes in under a minute."),
+        (2, "bob", "The mobile experience is great. Very responsive design."),
+        (3, "admin", "Running some maintenance this weekend. Expect brief downtime."),
+        (1, "alice", "Just made my 50th payment! This platform has been reliable from day one."),
+    ]
+
+    try:
+        cursor.executemany(
+            "INSERT INTO feedback (user_id, username, message) VALUES (%s, %s, %s)",
+            sample_feedback,
+        )
+    except psycopg2.IntegrityError:
+        print("Sample feedback already exists")
         conn.rollback()
 
     conn.commit()

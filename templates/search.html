@@ -18,11 +18,20 @@
     </div>
 
     {% if query %}
-    <!-- VULNERABLE: Reflected XSS - query is rendered without escaping -->
     <div class="search-results">
         <h3>Search results for: {{ query|safe }}</h3>
         <p class="result-count">Found {{ results|length }} result(s)</p>
     </div>
+
+    {% if error %}
+    <div class="card" style="border-left: 4px solid #e74c3c;">
+        <h3 style="color: #e74c3c;">⚠️ Error</h3>
+        <pre style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto;">{{ error }}</pre>
+        <p style="color: #666; margin-top: 10px;">
+            <em>Note: Error messages are displayed for demonstration purposes.</em>
+        </p>
+    </div>
+    {% endif %}
 
     {% if results %}
     <table class="data-table">
@@ -54,18 +63,21 @@
     {% else %}
     <p class="empty-state">No payments found matching your search.</p>
     {% endif %}
-    
+
     <!-- Debug Toggle Button -->
     <button onclick="toggleDebug()" class="btn btn-secondary" style="margin-top: 20px;">
         🐛 View SQL Query
     </button>
 
     <!-- SQL Debug Box -->
-    <div id="sql-debug-box" style="display: none; margin: 20px 0; padding: 15px; background: #f8f9fa; border: 2px solid #007bff; border-radius: 5px;">
+    <div id="sql-debug-box"
+        style="display: none; margin: 20px 0; padding: 15px; background: #f8f9fa; border: 2px solid #007bff; border-radius: 5px;">
         <h4 style="margin-top: 0; color: #007bff;">🔍 What's Happening - SQL Query Execution</h4>
-        <div style="background: #fff; padding: 15px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 14px; overflow-x: auto;">
+        <div
+            style="background: #fff; padding: 15px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 14px; overflow-x: auto;">
             <strong>Executed SQL:</strong>
-            <pre style="margin: 10px 0; padding: 10px; background: #f1f3f5; border-left: 4px solid #007bff;">{{ sql_query }}</pre>
+            <pre
+                style="margin: 10px 0; padding: 10px; background: #f1f3f5; border-left: 4px solid #007bff;">{{ sql_query }}</pre>
         </div>
     </div>
 
@@ -79,7 +91,7 @@
             }
         }
     </script>
-    
+
     {% endif %}
 </div>
 

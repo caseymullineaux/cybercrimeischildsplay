@@ -42,21 +42,21 @@ INSERT INTO users (
 VALUES (
         'alice',
         'alice@typo-payments.com',
-        'scrypt:32768:8:1$UxUr3pNhNm0xQvpt$19dc424b889620ab70c635048cc61ceb87a3ad15900db91454826c3e7c87ccbbbc452e8e2cec34d25b403f49921c611ee2f8dc824e9e2a0766aedd346c90dc77',
+        '23cb2d3d426b10abdf03417cdb095f08',
         'Alice Anderson',
         FALSE
     ),
     (
         'bob',
         'bob@typo-payments.com',
-        'scrypt:32768:8:1$eTV7wCaaT9wtsOtK$a3d998e12ede1fae9d56c12c2a3b22316557495f6ae253902b1c12d68a9ac596275e09101959eb1186e2ba9d056eac1f2ac7add54109f6314d55c838ee0da865',
+        '3941de2b1cfbe343743c5a8b7b45f63a',
         'Bob Builder',
         FALSE
     ),
     (
         'admin',
         'admin@typo-payments.com',
-        'scrypt:32768:8:1$y2OdA6rIss9XIGId$fb8ddc35c39f13d53bac9738473ca14283fef73b58b077a09f2ef3ea7c31cb35a94acf28a09ae58ee55a81b1632c793052ea29e883490637e89ffab81d7ee8a8',
+        'c53e479b03b3220d3d56da88c4cace20',
         'Admin User',
         TRUE
     ) ON CONFLICT (username) DO NOTHING;
@@ -282,4 +282,54 @@ VALUES (
         2,
         'bob',
         'The status page is helpful for tracking payments.'
+    ),
+    (
+        1,
+        'alice',
+        'I love the search feature! Makes finding old payments super quick.'
+    ),
+    (
+        3,
+        'admin',
+        'Dashboard looks clean and professional. Nice work on the UI!'
+    ),
+    (
+        2,
+        'bob',
+        'Would be nice to have payment categories for better organization.'
+    ),
+    (
+        1,
+        'alice',
+        'The email notifications are timely and helpful. Keep it up!'
+    ),
+    (
+        3,
+        'admin',
+        'Security note: Please ensure all users enable 2FA for their accounts.'
+    ),
+    (
+        2,
+        'bob',
+        'Can we get a monthly summary report feature? That would be awesome.'
+    ),
+    (
+        1,
+        'alice',
+        'Payment processing is fast! Usually completes in under a minute.'
+    ),
+    (
+        2,
+        'bob',
+        'The mobile experience is great. Very responsive design.'
+    ),
+    (
+        3,
+        'admin',
+        'Running some maintenance this weekend. Expect brief downtime.'
+    ),
+    (
+        1,
+        'alice',
+        'Just made my 50th payment! This platform has been reliable from day one.'
     ) ON CONFLICT DO NOTHING;
