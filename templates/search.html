@@ -52,12 +52,34 @@
     {% else %}
     <p class="empty-state">No payments found matching your search.</p>
     {% endif %}
+    
+    <!-- Debug Toggle Button -->
+    <button onclick="toggleDebug()" class="btn btn-secondary" style="margin-top: 20px;">
+        🐛 Toggle SQL Debug View
+    </button>
+
+    <!-- SQL Debug Box -->
+    <div id="sql-debug-box" style="display: none; margin: 20px 0; padding: 15px; background: #f8f9fa; border: 2px solid #007bff; border-radius: 5px;">
+        <h4 style="margin-top: 0; color: #007bff;">🔍 What's Happening - SQL Query Execution</h4>
+        <div style="background: #fff; padding: 15px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 14px; overflow-x: auto;">
+            <strong>Executed SQL:</strong>
+            <pre style="margin: 10px 0; padding: 10px; background: #f1f3f5; border-left: 4px solid #007bff;">{{ sql_query }}</pre>
+        </div>
+    </div>
+
+    <script>
+        function toggleDebug() {
+            var debugBox = document.getElementById('sql-debug-box');
+            if (debugBox.style.display === 'none') {
+                debugBox.style.display = 'block';
+            } else {
+                debugBox.style.display = 'none';
+            }
+        }
+    </script>
+    
     {% endif %}
 </div>
 
-<div class="vulnerability-note">
-    <h4>⚠️ Demo Vulnerability: Reflected XSS</h4>
-    <p>Try searching for: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code></p>
-    <p>Or try: <code>&lt;img src=x onerror=alert(document.cookie)&gt;</code></p>
-</div>
+
 {% endblock %}

@@ -9,6 +9,9 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     FLASK_APP=app.py
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org -r requirements.txt
@@ -26,11 +29,12 @@ COPY static/ static/
 # Create directory for database
 RUN mkdir -p /app/data
 
-# Initialize the database
-RUN python init_db.py
+# Copy entrypoint script
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
 # Expose port 5000
 EXPOSE 5000
 
-# Run the application
-CMD ["python", "app.py"]
+# Run the application with entrypoint
+ENTRYPOINT ["./entrypoint.sh"]

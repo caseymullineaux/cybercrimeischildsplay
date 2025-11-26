@@ -179,28 +179,34 @@ def dashboard():
     return render_template("dashboard.html", payments=payments)
 
 
-# VULNERABLE: Reflected XSS - search functionality
+# VULNERABLE: Reflected XSS AND SQL Injection - search functionality
 @app.route("/search")
 @login_required
 def search():
     query = request.args.get("q", "")
-    query.replace("<", "").replace(">", "")
     conn = get_db()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    # Fixed SQL injection but still vulnerable to XSS in the template
-    # Using parameterized queries to prevent SQL injection
-    search_pattern = f"%{query}%"
-    cursor.execute(
-        "SELECT * FROM payments WHERE user_id = %s AND (recipient LIKE %s OR description LIKE %s)",
-        (current_user.id, search_pattern, search_pattern),
-    )
-    results = cursor.fetchall()
+    # VULNERABLE: SQL Injection via search query!
+    # Building SQL with string formatting allows injection
+    # Query structure allows bypassing user_id filter
+    sql = f"SELECT * FROM payments WHERE (recipient LIKE '%{query}%' OR description LIKE '%{query}%') AND user_id = {current_user.id}"
+    
+    try:
+        cursor.execute(sql)
+        results = cursor.fetchall()
+    except Exception as e:
+        # Show errors AND the full SQL query for demo purposes
+        results = []
+        flash(f"Search error: {str(e)}", "error")
+        flash(f"SQL Query: {sql}", "error")
+    
     cursor.close()
     conn.close()
 
     # VULNERABLE: Directly passing unsanitized query to template where it's rendered with |safe
-    return render_template("search.html", query=query, results=results)
+    # Also pass the SQL query for educational debugging display
+    return render_template("search.html", query=query, results=results, sql_query=sql)
 
 
 # VULNERABLE: SQL Injection - payment status check
@@ -406,6 +412,27 @@ def delete_user(user_id):
     cursor.close()
     conn.close()
     return redirect(url_for("admin_users"))
+
+
+@app.route("/admin/reset-database", methods=["POST"])
+@admin_required
+def reset_database_route():
+    """Reset the entire database to initial demo state"""
+    try:
+        from reset_db import reset_database
+        success = reset_database()
+        
+        if success:
+            # Log out the current user since we're resetting everything
+            logout_user()
+            flash("Database has been reset to initial state. Please log in again.", "success")
+            return redirect(url_for("login"))
+        else:
+            flash("Failed to reset database. Check logs for details.", "error")
+            return redirect(url_for("admin_dashboard"))
+    except Exception as e:
+        flash(f"Error resetting database: {str(e)}", "error")
+        return redirect(url_for("admin_dashboard"))
 
 
 if __name__ == "__main__":

@@ -5,9 +5,9 @@
 }
 
 :root {
-    --primary-color: #6366f1;
-    --primary-dark: #4f46e5;
-    --secondary-color: #8b5cf6;
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --secondary-color: #007bff;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
@@ -123,7 +123,7 @@ main.container {
 }
 
 .btn-secondary:hover {
-    background-color: #7c3aed;
+    background-color: #0056b3;
 }
 
 .btn-logout {

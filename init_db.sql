@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS feedback (
 );
 -- Insert demo users
 -- Note: These are intentionally weak passwords for demonstration purposes
--- Password hashes are plain text (pbkdf2:sha256 format in production)
+-- Passwords: alice/password123, bob/password123, admin/admin123
 INSERT INTO users (
         username,
         email,
@@ -41,21 +41,21 @@ INSERT INTO users (
 VALUES (
         'alice',
         'alice@typo-payments.com',
-        'scrypt:32768:8:1$xqHnz5KdOLk4aMpE$5d2c8d3a6f1e9b8c7a4d2e1f0c9b8a7d6e5f4c3b2a1d0e9f8c7b6a5d4e3f2c1b0a9d8e7f6c5b4a3d2e1f0c9b8a7d6e5f4c3b2a1d',
+        'scrypt:32768:8:1$UxUr3pNhNm0xQvpt$19dc424b889620ab70c635048cc61ceb87a3ad15900db91454826c3e7c87ccbbbc452e8e2cec34d25b403f49921c611ee2f8dc824e9e2a0766aedd346c90dc77',
         'Alice Anderson',
         FALSE
     ),
     (
         'bob',
         'bob@typo-payments.com',
-        'scrypt:32768:8:1$xqHnz5KdOLk4aMpE$5d2c8d3a6f1e9b8c7a4d2e1f0c9b8a7d6e5f4c3b2a1d0e9f8c7b6a5d4e3f2c1b0a9d8e7f6c5b4a3d2e1f0c9b8a7d6e5f4c3b2a1d',
+        'scrypt:32768:8:1$eTV7wCaaT9wtsOtK$a3d998e12ede1fae9d56c12c2a3b22316557495f6ae253902b1c12d68a9ac596275e09101959eb1186e2ba9d056eac1f2ac7add54109f6314d55c838ee0da865',
         'Bob Builder',
         FALSE
     ),
     (
         'admin',
         'admin@typo-payments.com',
-        'scrypt:32768:8:1$xqHnz5KdOLk4aMpE$5d2c8d3a6f1e9b8c7a4d2e1f0c9b8a7d6e5f4c3b2a1d0e9f8c7b6a5d4e3f2c1b0a9d8e7f6c5b4a3d2e1f0c9b8a7d6e5f4c3b2a1d',
+        'scrypt:32768:8:1$y2OdA6rIss9XIGId$fb8ddc35c39f13d53bac9738473ca14283fef73b58b077a09f2ef3ea7c31cb35a94acf28a09ae58ee55a81b1632c793052ea29e883490637e89ffab81d7ee8a8',
         'Admin User',
         TRUE
     ) ON CONFLICT (username) DO NOTHING;

@@ -1,21 +1,28 @@
-import sqlite3
+import psycopg2
+import os
 from werkzeug.security import generate_password_hash
 
 
 def init_db():
     """Initialize the database with tables and sample data"""
-    conn = sqlite3.connect("typo_payments.db")
+    conn = psycopg2.connect(
+        host=os.environ.get("DB_HOST", "localhost"),
+        port=os.environ.get("DB_PORT", "5432"),
+        database=os.environ.get("DB_NAME", "typo_payments"),
+        user=os.environ.get("DB_USER", "typo_admin"),
+        password=os.environ.get("DB_PASSWORD", "insecure_password_123"),
+    )
     cursor = conn.cursor()
 
     # Create users table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             full_name TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0,
+            is_admin BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -23,9 +30,9 @@ def init_db():
     # Create payments table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS payments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
-            amount REAL NOT NULL,
+            amount DECIMAL(10, 2) NOT NULL,
             recipient TEXT NOT NULL,
             description TEXT,
             status TEXT DEFAULT 'pending',
@@ -37,7 +44,7 @@ def init_db():
     # Create feedback/comments table (vulnerable to stored XSS)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS feedback (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
             username TEXT NOT NULL,
             message TEXT NOT NULL,
@@ -53,31 +60,32 @@ def init_db():
             "alice@example.com",
             generate_password_hash("password123"),
             "Alice Johnson",
-            0,
+            False,
         ),
         (
             "bob",
             "bob@example.com",
             generate_password_hash("password123"),
             "Bob Smith",
-            0,
+            False,
         ),
         (
             "admin",
             "admin@typo.com",
             generate_password_hash("admin123"),
             "Admin User",
-            1,
+            True,
         ),
     ]
 
     try:
         cursor.executemany(
-            "INSERT INTO users (username, email, password_hash, full_name, is_admin) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO users (username, email, password_hash, full_name, is_admin) VALUES (%s, %s, %s, %s, %s)",
             sample_users,
         )
-    except sqlite3.IntegrityError:
+    except psycopg2.IntegrityError:
         print("Sample users already exist")
+        conn.rollback()
 
     # Insert sample payments - More realistic data for each user
     sample_payments = [
@@ -115,13 +123,15 @@ def init_db():
 
     try:
         cursor.executemany(
-            "INSERT INTO payments (user_id, amount, recipient, description, status) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO payments (user_id, amount, recipient, description, status) VALUES (%s, %s, %s, %s, %s)",
             sample_payments,
         )
-    except sqlite3.IntegrityError:
+    except psycopg2.IntegrityError:
         print("Sample payments already exist")
+        conn.rollback()
 
     conn.commit()
+    cursor.close()
     conn.close()
     print("Database initialized successfully!")
 
