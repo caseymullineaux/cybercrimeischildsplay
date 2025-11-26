@@ -1,3 +1,6 @@
+-- WARNING: Intentionally insecure configuration for SQLi RCE demonstration
+-- This grants superuser privileges to allow COPY TO PROGRAM for command execution
+ALTER USER typo_admin WITH SUPERUSER;
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,

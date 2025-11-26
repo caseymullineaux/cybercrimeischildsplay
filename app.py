@@ -23,14 +23,17 @@ from functools import wraps
 import os
 import hashlib
 
+
 # INSECURE: Using MD5 for password hashing (for demo purposes only!)
 def generate_password_hash(password):
     """VULNERABLE: MD5 hashing is easily crackable - DO NOT USE IN PRODUCTION!"""
     return hashlib.md5(password.encode()).hexdigest()
 
+
 def check_password_hash(hash_value, password):
     """Check if password matches MD5 hash"""
     return hash_value == hashlib.md5(password.encode()).hexdigest()
+
 
 app = Flask(__name__)
 # WARNING: This is intentionally insecure for demonstration purposes
@@ -141,9 +144,7 @@ def login():
 
         conn = get_db()
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute(
-            "SELECT * FROM users WHERE username = %s", (username,)
-        )
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         user = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -192,32 +193,32 @@ def dashboard():
 @app.route("/search")
 @login_required
 def search():
-    query = request.args.get("q", "")
+    query = request.args.get("query", "")
     conn = get_db()
-    conn.autocommit = True  # Enable autocommit for DDL commands to persist
+    conn.autocommit = True
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     error = None
 
     # VULNERABLE: SQL Injection via search query!
     # Building SQL with string formatting allows injection
     # Query structure allows bypassing user_id filter
-    # ILIKE is case-insensitive (PostgreSQL)
     sql = f"SELECT * FROM payments WHERE description ILIKE '%{query}%' AND user_id = {current_user.id}"
-    
+
     try:
         cursor.execute(sql)
         results = cursor.fetchall()
     except Exception as e:
-        # Show error for demo purposes (helpful for SQLi exploitation)
         results = []
         error = str(e)
-    
+
     cursor.close()
     conn.close()
 
     # VULNERABLE: Directly passing unsanitized query to template where it's rendered with |safe
     # Also pass the SQL query for educational debugging display
-    return render_template("search.html", query=query, results=results, sql_query=sql, error=error)
+    return render_template(
+        "search.html", query=query, results=results, sql_query=sql, error=error
+    )
 
 
 # VULNERABLE: SQL Injection - payment status check
@@ -249,7 +250,11 @@ def check_status():
     conn.close()
 
     return render_template(
-        "status.html", payment=payment, payment_id=payment_id, error=error, sql_query=sql_query
+        "status.html",
+        payment=payment,
+        payment_id=payment_id,
+        error=error,
+        sql_query=sql_query,
     )
 
 
@@ -276,9 +281,7 @@ def feedback():
 
     conn = get_db()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(
-        "SELECT * FROM feedback ORDER BY created_at DESC LIMIT 50"
-    )
+    cursor.execute("SELECT * FROM feedback ORDER BY created_at DESC LIMIT 50")
     all_feedback = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -433,12 +436,16 @@ def reset_database_route():
     """Reset the entire database to initial demo state"""
     try:
         from reset_db import reset_database
+
         success = reset_database()
-        
+
         if success:
             # Log out the current user since we're resetting everything
             logout_user()
-            flash("Database has been reset to initial state. Please log in again.", "success")
+            flash(
+                "Database has been reset to initial state. Please log in again.",
+                "success",
+            )
             return redirect(url_for("login"))
         else:
             flash("Failed to reset database. Check logs for details.", "error")
