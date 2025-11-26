@@ -1,5 +1,3 @@
--- Typo Payments PostgreSQL Database Initialization
--- This script creates tables and populates them with demo data
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,

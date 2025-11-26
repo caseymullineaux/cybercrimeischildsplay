@@ -194,6 +194,7 @@ def dashboard():
 def search():
     query = request.args.get("q", "")
     conn = get_db()
+    conn.autocommit = True  # Enable autocommit for DDL commands to persist
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     error = None
 
