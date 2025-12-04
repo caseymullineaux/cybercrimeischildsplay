@@ -9,7 +9,6 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
-      - ./dbconf.ini:/dbconf.ini:ro
     networks:
       - typo-network
   typo-payments:
@@ -17,7 +16,6 @@ services:
     container_name: typo-payments-demo
     ports:
       - "5000:5000"
-    # Live reload enabled - changes to these files will be reflected immediately
     env_file:
       - .env
     volumes:

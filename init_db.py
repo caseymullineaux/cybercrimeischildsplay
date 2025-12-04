@@ -113,12 +113,6 @@ def init_db():
         (2, "Bob Smith", 234.56, "Restaurant", "Dinner with clients", "pending"),
         (2, "Bob Smith", 15.99, "Apple iCloud", "Cloud storage subscription", "completed"),
         (2, "Bob Smith", 199.00, "Home Depot", "Home improvement supplies", "completed"),
-        # Admin's payments (user_id = 3)
-        (3, "Admin User", 5000.00, "Company Payroll", "Monthly salary distribution", "completed"),
-        (3, "Admin User", 850.00, "AWS Services", "Cloud hosting infrastructure", "completed"),
-        (3, "Admin User", 299.00, "Office Supplies", "Stationery and equipment", "completed"),
-        (3, "Admin User", 1200.00, "Marketing Agency", "Digital advertising campaign", "pending"),
-        (3, "Admin User", 450.00, "Software Licenses", "Annual subscription renewal", "completed"),
     ]
 
     try:
@@ -135,14 +129,11 @@ def init_db():
         (1, "alice", "Great payment system! Very easy to use."),
         (2, "bob", "The status page is helpful for tracking payments."),
         (1, "alice", "I love the search feature! Makes finding old payments super quick."),
-        (3, "admin", "Dashboard looks clean and professional. Nice work on the UI!"),
         (2, "bob", "Would be nice to have payment categories for better organization."),
         (1, "alice", "The email notifications are timely and helpful. Keep it up!"),
-        (3, "admin", "Security note: Please ensure all users enable 2FA for their accounts."),
         (2, "bob", "Can we get a monthly summary report feature? That would be awesome."),
         (1, "alice", "Payment processing is fast! Usually completes in under a minute."),
         (2, "bob", "The mobile experience is great. Very responsive design."),
-        (3, "admin", "Running some maintenance this weekend. Expect brief downtime."),
         (1, "alice", "Just made my 50th payment! This platform has been reliable from day one."),
     ]
 

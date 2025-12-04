@@ -238,7 +238,7 @@ def check_status():
             # VULNERABLE: Using string formatting - allows SQL injection!
             # This allows attackers to extract data from ANY table, not just payments
             # Query structure allows easy exploitation with OR logic
-            query = f"SELECT * FROM payments WHERE id = {payment_id} AND user_id = {current_user.id}"
+            query = f"SELECT * FROM payments WHERE user_id = {current_user.id} AND id = {payment_id}"
             sql_query = query  # Store for debug display
             cursor.execute(query)
             payment = cursor.fetchone()
