@@ -189,7 +189,6 @@ def dashboard():
     return render_template("dashboard.html", payments=payments)
 
 
-# VULNERABLE: Reflected XSS AND SQL Injection - search functionality
 @app.route("/search")
 @login_required
 def search():
@@ -212,8 +211,6 @@ def search():
     cursor.close()
     conn.close()
 
-    # VULNERABLE: Directly passing unsanitized query to template where it's rendered with |safe
-    # Also pass the SQL query for educational debugging display
     return render_template(
         "search.html", query=query, results=results, sql_query=sql, error=error
     )
@@ -240,12 +237,7 @@ def check_status():
             cursor.execute(query)
             payment = cursor.fetchone()
 
-            # If query returns results (TRUE): payment details are shown
-            # If query returns nothing (FALSE): "Payment Not Found" message
-
         except Exception:
-            # VULNERABLE: Suppress errors - making this truly "blind"
-            # Even syntax errors are hidden, treated as FALSE (no payment found)
             payment = None
 
     cursor.close()
@@ -441,7 +433,6 @@ def reset_database_route():
         success = reset_database()
 
         if success:
-            # Log out the current user since we're resetting everything
             logout_user()
             flash(
                 "Database has been reset to initial state. Please log in again.",
