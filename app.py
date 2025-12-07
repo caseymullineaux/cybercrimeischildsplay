@@ -54,8 +54,8 @@ def get_db():
         host=os.environ.get("DB_HOST", "localhost"),
         port=os.environ.get("DB_PORT", "5432"),
         database=os.environ.get("DB_NAME", "typo_payments"),
-        user=os.environ.get("DB_USER", "typo_admin"),
-        password=os.environ.get("DB_PASSWORD", "insecure_password_123"),
+        user=os.environ.get("DB_USER", "admin"),
+        password=os.environ.get("DB_PASSWORD", "password123"),
     )
     return conn
 
@@ -200,8 +200,6 @@ def search():
     error = None
 
     # VULNERABLE: SQL Injection via search query!
-    # Building SQL with string formatting allows injection
-    # Query structure allows bypassing user_id filter
     sql = f"SELECT * FROM payments WHERE description ILIKE '%{query}%' AND user_id = {current_user.id}"
 
     try:
@@ -221,7 +219,7 @@ def search():
     )
 
 
-# VULNERABLE: SQL Injection - payment status check
+# VULNERABLE: Blind SQL Injection - payment status check
 @app.route("/status")
 @login_required
 def check_status():
@@ -230,21 +228,25 @@ def check_status():
     conn = get_db()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     payment = None
-    error = None
     sql_query = None
 
     if payment_id:
         try:
-            # VULNERABLE: Using string formatting - allows SQL injection!
-            # This allows attackers to extract data from ANY table, not just payments
-            # Query structure allows easy exploitation with OR logic
+            # VULNERABLE: Blind SQL Injection via string formatting
+            # Returns full payment details if TRUE, nothing if FALSE
+            # Attackers can extract data by observing "Payment details shown" vs "Payment Not Found"
             query = f"SELECT * FROM payments WHERE user_id = {current_user.id} AND id = {payment_id}"
             sql_query = query  # Store for debug display
             cursor.execute(query)
             payment = cursor.fetchone()
-        except Exception as e:
-            # Show error for demo purposes (helpful for SQLi exploitation)
-            error = str(e)
+
+            # If query returns results (TRUE): payment details are shown
+            # If query returns nothing (FALSE): "Payment Not Found" message
+
+        except Exception:
+            # VULNERABLE: Suppress errors - making this truly "blind"
+            # Even syntax errors are hidden, treated as FALSE (no payment found)
+            payment = None
 
     cursor.close()
     conn.close()
@@ -253,7 +255,6 @@ def check_status():
         "status.html",
         payment=payment,
         payment_id=payment_id,
-        error=error,
         sql_query=sql_query,
     )
 

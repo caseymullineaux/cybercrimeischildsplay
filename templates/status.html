@@ -22,18 +22,6 @@
         </form>
     </div>
 
-
-
-    {% if error %}
-    <div class="card" style="border-left: 4px solid #e74c3c;">
-        <h3 style="color: #e74c3c;">⚠️ Error</h3>
-        <pre style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto;">{{ error }}</pre>
-        <p style="color: #666; margin-top: 10px;">
-            <em>Note: Error messages are displayed for demonstration purposes.</em>
-        </p>
-    </div>
-    {% endif %}
-
     {% if payment %}
     <div class="card">
         <h3>✅ Payment Found</h3>
@@ -76,9 +64,9 @@
             </tr>
         </table>
     </div>
-    {% elif payment_id and not error %}
-    <div class="card" style="border-left: 4px solid #f39c12;">
-        <h3 style="color: #f39c12;">❌ Payment Not Found</h3>
+    {% elif payment_id %}
+    <div class="card" style="border-left: 4px solid #e74c3c;">
+        <h3 style="color: #e74c3c;">❌ Payment Not Found</h3>
         <p>No payment found with ID: <strong>{{ payment_id }}</strong></p>
         <p style="color: #666;">
             This could mean:

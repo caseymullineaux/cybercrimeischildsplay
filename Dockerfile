@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir --trusted-host pypi.org --trusted-host pypi.pytho
 COPY app.py .
 COPY init_db.py .
 COPY reset_db.py .
-COPY dbconf.ini .
+# COPY dbconf.ini .
 
 # Copy templates and static files
 COPY templates/ templates/

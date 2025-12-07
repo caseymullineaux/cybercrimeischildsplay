@@ -1,6 +1,13 @@
 -- WARNING: Intentionally insecure configuration for SQLi RCE demonstration
 -- This grants superuser privileges to allow COPY TO PROGRAM for command execution
-ALTER USER typo_admin WITH SUPERUSER;
+-- Note: The admin user is created automatically by PostgreSQL from POSTGRES_USER
+DO $$ BEGIN IF EXISTS (
+    SELECT
+    FROM pg_catalog.pg_roles
+    WHERE rolname = 'admin'
+) THEN ALTER USER admin WITH SUPERUSER;
+END IF;
+END $$;
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -30,9 +37,31 @@ CREATE TABLE IF NOT EXISTS feedback (
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+-- User details table (contains sensitive PII)
+-- WARNING: This contains intentionally exposed sensitive data for SQLi demonstration
+CREATE TABLE IF NOT EXISTS user_details (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),
+    date_of_birth DATE NOT NULL,
+    ssn VARCHAR(11) NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    address_line1 VARCHAR(200) NOT NULL,
+    address_line2 VARCHAR(200),
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    zip_code VARCHAR(10) NOT NULL,
+    country VARCHAR(100) DEFAULT 'USA',
+    credit_card_number VARCHAR(19) NOT NULL,
+    credit_card_cvv VARCHAR(4) NOT NULL,
+    credit_card_expiry VARCHAR(7) NOT NULL,
+    bank_account_number VARCHAR(20),
+    bank_routing_number VARCHAR(9),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 -- Insert demo users
 -- Note: These are intentionally weak passwords for demonstration purposes
--- Passwords: alice/password123, bob/password123, admin/admin123
+-- Passwords: alice/password123, john/password123, admin/admin123
 INSERT INTO users (
         username,
         email,
@@ -44,14 +73,14 @@ VALUES (
         'alice',
         'alice@typo-payments.com',
         '23cb2d3d426b10abdf03417cdb095f08',
-        'Alice Anderson',
+        'Alice Johnson',
         FALSE
     ),
     (
-        'bob',
-        'bob@typo-payments.com',
+        'john',
+        'john@typo-payments.com',
         '3941de2b1cfbe343743c5a8b7b45f63a',
-        'Bob Builder',
+        'John Smith',
         FALSE
     ),
     (
@@ -72,7 +101,7 @@ INSERT INTO payments (
     )
 VALUES (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Starbucks',
         5.75,
         'Morning coffee',
@@ -80,7 +109,7 @@ VALUES (
     ),
     (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Amazon',
         49.99,
         'Office supplies',
@@ -88,7 +117,7 @@ VALUES (
     ),
     (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Netflix',
         15.99,
         'Monthly subscription',
@@ -96,7 +125,7 @@ VALUES (
     ),
     (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Uber',
         23.50,
         'Ride to airport',
@@ -104,7 +133,7 @@ VALUES (
     ),
     (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Whole Foods',
         127.43,
         'Grocery shopping',
@@ -112,7 +141,7 @@ VALUES (
     ),
     (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Shell Gas Station',
         45.00,
         'Fuel',
@@ -120,7 +149,7 @@ VALUES (
     ),
     (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Apple',
         1.99,
         'App purchase',
@@ -128,13 +157,13 @@ VALUES (
     ),
     (
         1,
-        'Alice Anderson',
+        'Alice Johnson',
         'Target',
         78.32,
         'Household items',
         'completed'
     ) ON CONFLICT DO NOTHING;
--- Insert realistic payment data for Bob (user_id = 2)
+-- Insert realistic payment data for john (user_id = 2)
 INSERT INTO payments (
         user_id,
         user_name,
@@ -145,7 +174,7 @@ INSERT INTO payments (
     )
 VALUES (
         2,
-        'Bob Builder',
+        'John Smith',
         'Home Depot',
         234.56,
         'Building materials',
@@ -153,7 +182,7 @@ VALUES (
     ),
     (
         2,
-        'Bob Builder',
+        'John Smith',
         'Chipotle',
         12.45,
         'Lunch',
@@ -161,7 +190,7 @@ VALUES (
     ),
     (
         2,
-        'Bob Builder',
+        'John Smith',
         'Spotify',
         9.99,
         'Music streaming',
@@ -169,7 +198,7 @@ VALUES (
     ),
     (
         2,
-        'Bob Builder',
+        'John Smith',
         'Costco',
         187.92,
         'Bulk shopping',
@@ -177,7 +206,7 @@ VALUES (
     ),
     (
         2,
-        'Bob Builder',
+        'John Smith',
         'Chevron',
         52.00,
         'Gas station',
@@ -185,7 +214,7 @@ VALUES (
     ),
     (
         2,
-        'Bob Builder',
+        'John Smith',
         'Best Buy',
         399.99,
         'Electronics',
@@ -193,83 +222,10 @@ VALUES (
     ),
     (
         2,
-        'Bob Builder',
+        'John Smith',
         'Pizza Hut',
         28.75,
         'Family dinner',
-        'completed'
-    ) ON CONFLICT DO NOTHING;
--- Insert realistic payment data for Admin (user_id = 3)
-INSERT INTO payments (
-        user_id,
-        user_name,
-        recipient,
-        amount,
-        description,
-        status
-    )
-VALUES (
-        3,
-        'Admin User',
-        'AWS',
-        450.00,
-        'Cloud hosting services',
-        'completed'
-    ),
-    (
-        3,
-        'Admin User',
-        'GitHub',
-        21.00,
-        'Enterprise subscription',
-        'completed'
-    ),
-    (
-        3,
-        'Admin User',
-        'Slack',
-        80.00,
-        'Team communication',
-        'completed'
-    ),
-    (
-        3,
-        'Admin User',
-        'DigitalOcean',
-        120.00,
-        'Server costs',
-        'completed'
-    ),
-    (
-        3,
-        'Admin User',
-        'JetBrains',
-        149.00,
-        'IDE license',
-        'completed'
-    ),
-    (
-        3,
-        'Admin User',
-        'Zoom',
-        14.99,
-        'Pro subscription',
-        'completed'
-    ),
-    (
-        3,
-        'Admin User',
-        'Adobe',
-        52.99,
-        'Creative Cloud',
-        'completed'
-    ),
-    (
-        3,
-        'Admin User',
-        'Microsoft 365',
-        69.99,
-        'Office subscription',
         'completed'
     ) ON CONFLICT DO NOTHING;
 -- Create some sample feedback (safe examples)
@@ -281,7 +237,7 @@ VALUES (
     ),
     (
         2,
-        'bob',
+        'john',
         'The status page is helpful for tracking payments.'
     ),
     (
@@ -290,13 +246,8 @@ VALUES (
         'I love the search feature! Makes finding old payments super quick.'
     ),
     (
-        3,
-        'admin',
-        'Dashboard looks clean and professional. Nice work on the UI!'
-    ),
-    (
         2,
-        'bob',
+        'john',
         'Would be nice to have payment categories for better organization.'
     ),
     (
@@ -305,13 +256,8 @@ VALUES (
         'The email notifications are timely and helpful. Keep it up!'
     ),
     (
-        3,
-        'admin',
-        'Security note: Please ensure all users enable 2FA for their accounts.'
-    ),
-    (
         2,
-        'bob',
+        'john',
         'Can we get a monthly summary report feature? That would be awesome.'
     ),
     (
@@ -321,16 +267,77 @@ VALUES (
     ),
     (
         2,
-        'bob',
+        'john',
         'The mobile experience is great. Very responsive design.'
-    ),
-    (
-        3,
-        'admin',
-        'Running some maintenance this weekend. Expect brief downtime.'
     ),
     (
         1,
         'alice',
         'Just made my 50th payment! This platform has been reliable from day one.'
     ) ON CONFLICT DO NOTHING;
+-- Insert sensitive user details (PII for SQLi demonstration)
+-- WARNING: This is intentionally insecure - sensitive data should be encrypted!
+INSERT INTO user_details (
+        user_id,
+        date_of_birth,
+        ssn,
+        phone_number,
+        address_line1,
+        address_line2,
+        city,
+        state,
+        zip_code,
+        credit_card_number,
+        credit_card_cvv,
+        credit_card_expiry,
+        bank_account_number,
+        bank_routing_number
+    )
+VALUES (
+        1,
+        '1985-03-15',
+        '123-45-6789',
+        '+1 (555) 123-4567',
+        '742 Evergreen Terrace',
+        'Apt 4B',
+        'Springfield',
+        'Illinois',
+        '62701',
+        '4532-1234-5678-9010',
+        '123',
+        '12/2027',
+        '9876543210',
+        '021000021'
+    ),
+    (
+        2,
+        '1990-07-22',
+        '987-65-4321',
+        '+1 (555) 987-6543',
+        '1600 Pennsylvania Avenue',
+        NULL,
+        'Washington',
+        'DC',
+        '20500',
+        '5425-2334-3010-9876',
+        '456',
+        '08/2026',
+        '1234567890',
+        '026009593'
+    ),
+    (
+        3,
+        '1978-11-30',
+        '555-12-3456',
+        '+1 (555) 234-5678',
+        '350 Fifth Avenue',
+        'Suite 1000',
+        'New York',
+        'New York',
+        '10118',
+        '3782-822463-10005',
+        '789',
+        '03/2028',
+        '5555666677',
+        '021001088'
+    ) ON CONFLICT (user_id) DO NOTHING;

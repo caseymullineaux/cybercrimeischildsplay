@@ -14,8 +14,8 @@ def init_db():
         host=os.environ.get("DB_HOST", "localhost"),
         port=os.environ.get("DB_PORT", "5432"),
         database=os.environ.get("DB_NAME", "typo_payments"),
-        user=os.environ.get("DB_USER", "typo_admin"),
-        password=os.environ.get("DB_PASSWORD", "insecure_password_123"),
+        user=os.environ.get("DB_USER", "admin"),
+        password=os.environ.get("DB_PASSWORD", "password123"),
     )
     cursor = conn.cursor()
 
@@ -72,7 +72,7 @@ def init_db():
             "bob",
             "bob@example.com",
             generate_password_hash("Summer2023!"),
-            "Bob Smith",
+            "John Smith",
             False,
         ),
         (
@@ -104,15 +104,15 @@ def init_db():
         (1, "Alice Johnson", 299.99, "Amazon", "Electronics purchase", "pending"),
         (1, "Alice Johnson", 75.00, "Gym Membership", "Monthly fitness subscription", "completed"),
         (1, "Alice Johnson", 12.99, "Spotify Premium", "Music streaming", "completed"),
-        # Bob's payments (user_id = 2)
-        (2, "Bob Smith", 2100.00, "Mortgage Payment", "Home loan monthly payment", "completed"),
-        (2, "Bob Smith", 450.00, "Auto Insurance", "Car insurance premium", "completed"),
-        (2, "Bob Smith", 67.89, "Gas Station", "Fuel for vehicle", "completed"),
-        (2, "Bob Smith", 123.45, "Internet Provider", "High-speed internet service", "completed"),
-        (2, "Bob Smith", 89.00, "Phone Bill", "Mobile service payment", "completed"),
-        (2, "Bob Smith", 234.56, "Restaurant", "Dinner with clients", "pending"),
-        (2, "Bob Smith", 15.99, "Apple iCloud", "Cloud storage subscription", "completed"),
-        (2, "Bob Smith", 199.00, "Home Depot", "Home improvement supplies", "completed"),
+        # John's payments (user_id = 2)
+        (2, "John Smith", 2100.00, "Mortgage Payment", "Home loan monthly payment", "completed"),
+        (2, "John Smith", 450.00, "Auto Insurance", "Car insurance premium", "completed"),
+        (2, "John Smith", 67.89, "Gas Station", "Fuel for vehicle", "completed"),
+        (2, "John Smith", 123.45, "Internet Provider", "High-speed internet service", "completed"),
+        (2, "John Smith", 89.00, "Phone Bill", "Mobile service payment", "completed"),
+        (2, "John Smith", 234.56, "Restaurant", "Dinner with clients", "pending"),
+        (2, "John Smith", 15.99, "Apple iCloud", "Cloud storage subscription", "completed"),
+        (2, "John Smith", 199.00, "Home Depot", "Home improvement supplies", "completed"),
     ]
 
     try:
