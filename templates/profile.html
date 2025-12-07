@@ -24,26 +24,8 @@
                 <span class="detail-label">User ID:</span>
                 <span class="detail-value">#{{ current_user.id }}</span>
             </div>
-            <div class="detail-item">
-                <span class="detail-label">Session Cookie:</span>
-                <span class="detail-value" id="cookie-value">Check console</span>
-            </div>
         </div>
-    </div>
-
-    <div class="info-box">
-        <h3>🍪 Session Information</h3>
-        <p>Your session is managed using cookies. Open the browser console to see your session cookie.</p>
-        <button onclick="showCookies()" class="btn btn-secondary">Show Cookies</button>
     </div>
 </div>
 
-<script>
-    // VULNERABLE: Demonstrating that cookies are accessible via JavaScript
-    function showCookies() {
-        alert('Your cookies:\\n\\n' + document.cookie);
-        console.log('Session Cookies:', document.cookie);
-        document.getElementById('cookie-value').textContent = document.cookie || 'No cookies found';
-    }
-</script>
 {% endblock %}
