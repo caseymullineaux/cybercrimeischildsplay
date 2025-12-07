@@ -23,31 +23,32 @@
     </div>
 
     {% if payment %}
-    <div class="card">
-        <h3>✅ Payment Found</h3>
+    <div class="card payment-card-success">
+        <div class="payment-header">
+            <h3>✅ Payment Found</h3>
+            <span class="payment-id-badge">ID: {{ payment.id }}</span>
+        </div>
+        
+        <div class="payment-amount-highlight">
+            <div class="amount-label">Amount</div>
+            <div class="amount-value">${{ "%.2f"|format(payment.amount) }}</div>
+        </div>
+
         <table class="payment-details">
             <tr>
-                <th>Payment ID:</th>
-                <td>{{ payment.id }}</td>
-            </tr>
-            <tr>
-                <th>User:</th>
+                <th>👤 User:</th>
                 <td>{{ payment.user_name }}</td>
             </tr>
             <tr>
-                <th>Amount:</th>
-                <td class="amount">${{ "%.2f"|format(payment.amount) }}</td>
-            </tr>
-            <tr>
-                <th>Recipient:</th>
+                <th>🏢 Recipient:</th>
                 <td>{{ payment.recipient }}</td>
             </tr>
             <tr>
-                <th>Description:</th>
+                <th>📝 Description:</th>
                 <td>{{ payment.description }}</td>
             </tr>
             <tr>
-                <th>Status:</th>
+                <th>📊 Status:</th>
                 <td>
                     {% if payment.status == 'completed' %}
                     <span class="status-badge status-completed">✓ Completed</span>
@@ -59,23 +60,25 @@
                 </td>
             </tr>
             <tr>
-                <th>Date:</th>
-                <td>{{ payment.created_at }}</td>
+                <th>📅 Date:</th>
+                <td>{{ payment.created_at.strftime('%B %d, %Y at %I:%M %p') if payment.created_at else payment.created_at }}</td>
             </tr>
         </table>
     </div>
     {% elif payment_id %}
-    <div class="card" style="border-left: 4px solid #e74c3c;">
-        <h3 style="color: #e74c3c;">❌ Payment Not Found</h3>
-        <p>No payment found with ID: <strong>{{ payment_id }}</strong></p>
-        <p style="color: #666;">
-            This could mean:
-        </p>
-        <ul style="color: #666;">
-            <li>The payment ID doesn't exist</li>
-            <li>The payment belongs to another user</li>
-            <li>The payment ID is invalid</li>
-        </ul>
+    <div class="card payment-card-error">
+        <div class="error-icon">❌</div>
+        <h3 class="error-title">Payment Not Found</h3>
+        <p class="error-message">We couldn't find a payment with the following ID:</p>
+        <div class="payment-id-error">{{ payment_id }}</div>
+        <div class="error-suggestions">
+            <p><strong>💡 Suggestions:</strong></p>
+            <ul>
+                <li>Double-check the payment ID for typos</li>
+                <li>Ensure you're logged in with the correct account</li>
+                <li>The payment may have been deleted or archived</li>
+            </ul>
+        </div>
     </div>
     {% endif %}
     <!-- SQL Debug Toggle Button -->
@@ -111,27 +114,94 @@
 </div>
 
 <style>
+    .payment-card-success {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .payment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .payment-header h3 {
+        margin: 0;
+        font-size: 1.5em;
+        color: white;
+    }
+
+    .payment-id-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+    }
+
+    .payment-amount-highlight {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 25px;
+        backdrop-filter: blur(10px);
+    }
+
+    .amount-label {
+        font-size: 0.9em;
+        opacity: 0.9;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .amount-value {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
     .payment-details {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
     }
 
     .payment-details th {
         text-align: left;
-        padding: 10px;
-        background-color: #f8f9fa;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.05);
         font-weight: 600;
         width: 150px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95em;
     }
 
     .payment-details td {
-        padding: 10px;
-        border-bottom: 1px solid #e0e0e0;
+        padding: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1em;
     }
 
     .payment-details tr:last-child td {
         border-bottom: none;
+    }
+
+    .payment-details tr:hover {
+        background: rgba(255, 255, 255, 0.05);
     }
 
     .amount {
@@ -162,6 +232,100 @@
     ol {
         margin-left: 20px;
         line-height: 1.8;
+    }
+
+    /* Status badges with better styling */
+    .status-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9em;
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .status-completed {
+        background: rgba(46, 204, 113, 0.3);
+        color: #d4f4dd;
+        border: 2px solid rgba(46, 204, 113, 0.5);
+    }
+
+    .status-pending {
+        background: rgba(241, 196, 15, 0.3);
+        color: #fef5d4;
+        border: 2px solid rgba(241, 196, 15, 0.5);
+    }
+
+    /* Error card styling */
+    .payment-card-error {
+        background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+        border: none;
+        color: white;
+        box-shadow: 0 10px 30px rgba(252, 74, 26, 0.3);
+        text-align: center;
+        padding: 40px 30px;
+    }
+
+    .error-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+        animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+
+    .error-title {
+        margin: 0 0 15px 0;
+        font-size: 1.8em;
+        color: white;
+    }
+
+    .error-message {
+        opacity: 0.95;
+        margin-bottom: 20px;
+        font-size: 1.1em;
+    }
+
+    .payment-id-error {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-size: 1.3em;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        margin: 20px auto;
+        display: inline-block;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .error-suggestions {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 25px;
+        text-align: left;
+        backdrop-filter: blur(10px);
+    }
+
+    .error-suggestions p {
+        margin: 0 0 10px 0;
+        font-size: 1em;
+    }
+
+    .error-suggestions ul {
+        margin: 10px 0 0 0;
+        padding-left: 25px;
+        line-height: 1.8;
+    }
+
+    .error-suggestions li {
+        margin-bottom: 8px;
+        opacity: 0.95;
     }
 </style>
 {% endblock %}
