@@ -37,11 +37,12 @@ CREATE TABLE IF NOT EXISTS feedback (
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
--- User details table (contains sensitive PII)
+-- Billing information table (contains sensitive PII)
 -- WARNING: This contains intentionally exposed sensitive data for SQLi demonstration
-CREATE TABLE IF NOT EXISTS user_details (
+CREATE TABLE IF NOT EXISTS billing_information (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),
+    full_name VARCHAR(120) NOT NULL,
     date_of_birth DATE NOT NULL,
     ssn VARCHAR(11) NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
@@ -277,8 +278,9 @@ VALUES (
     ) ON CONFLICT DO NOTHING;
 -- Insert sensitive user details (PII for SQLi demonstration)
 -- WARNING: This is intentionally insecure - sensitive data should be encrypted!
-INSERT INTO user_details (
+INSERT INTO billing_information (
         user_id,
+        full_name,
         date_of_birth,
         ssn,
         phone_number,
@@ -295,6 +297,7 @@ INSERT INTO user_details (
     )
 VALUES (
         1,
+        'Alice Johnson',
         '1985-03-15',
         '123-45-6789',
         '+1 (555) 123-4567',
@@ -311,6 +314,7 @@ VALUES (
     ),
     (
         2,
+        'John Smith',
         '1990-07-22',
         '987-65-4321',
         '+1 (555) 987-6543',
@@ -324,20 +328,4 @@ VALUES (
         '08/2026',
         '1234567890',
         '026009593'
-    ),
-    (
-        3,
-        '1978-11-30',
-        '555-12-3456',
-        '+1 (555) 234-5678',
-        '350 Fifth Avenue',
-        'Suite 1000',
-        'New York',
-        'New York',
-        '10118',
-        '3782-822463-10005',
-        '789',
-        '03/2028',
-        '5555666677',
-        '021001088'
     ) ON CONFLICT (user_id) DO NOTHING;
