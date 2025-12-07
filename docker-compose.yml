@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: typo-db
+    hostname: typo-db
     env_file:
       - .env
     ports:
@@ -49,6 +50,7 @@ services:
   attacker:
     image: alpine:latest
     container_name: typo-attacker
+    hostname: attacker-machine
     command: /bin/sh -c "while true; do sleep 3600; done"
     tty: true
     stdin_open: true
