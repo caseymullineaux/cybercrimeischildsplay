@@ -46,6 +46,16 @@ services:
     networks:
       - typo-network
 
+  attacker:
+    image: alpine:latest
+    container_name: typo-attacker
+    command: /bin/sh -c "while true; do sleep 3600; done"
+    tty: true
+    stdin_open: true
+    networks:
+      - typo-network
+    restart: unless-stopped
+
 networks:
   typo-network:
     driver: bridge
