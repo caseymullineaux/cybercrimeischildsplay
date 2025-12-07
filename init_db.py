@@ -69,8 +69,8 @@ def init_db():
             False,
         ),
         (
-            "bob",
-            "bob@example.com",
+            "john",
+            "john@example.com",
             generate_password_hash("Summer2023!"),
             "John Smith",
             False,
@@ -127,13 +127,13 @@ def init_db():
     # Insert sample feedback
     sample_feedback = [
         (1, "alice", "Great payment system! Very easy to use."),
-        (2, "bob", "The status page is helpful for tracking payments."),
+        (2, "john", "The status page is helpful for tracking payments."),
         (1, "alice", "I love the search feature! Makes finding old payments super quick."),
-        (2, "bob", "Would be nice to have payment categories for better organization."),
+        (2, "john", "Would be nice to have payment categories for better organization."),
         (1, "alice", "The email notifications are timely and helpful. Keep it up!"),
-        (2, "bob", "Can we get a monthly summary report feature? That would be awesome."),
+        (2, "john", "Can we get a monthly summary report feature? That would be awesome."),
         (1, "alice", "Payment processing is fast! Usually completes in under a minute."),
-        (2, "bob", "The mobile experience is great. Very responsive design."),
+        (2, "john", "The mobile experience is great. Very responsive design."),
         (1, "alice", "Just made my 50th payment! This platform has been reliable from day one."),
     ]
 
