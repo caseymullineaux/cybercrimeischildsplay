@@ -2,7 +2,8 @@
 
 A **deliberately vulnerable** web application for demonstrating multiple security vulnerabilities. This application simulates a fictional payment processing company called "Typo Payments".
 
-> [!NOTE] **Remember**: 
+> [!NOTE] 
+> **Remember**: 
 > Never use these techniques maliciously. Understanding vulnerabilities helps build more secure applications! 
 
 
@@ -61,15 +62,19 @@ graph TB
         attacker -.->|"Network Access"| postgres
     end
     
-    style web fill:#4CAF50
-    style postgres fill:#336791
-    style pgadmin fill:#1976D2
-    style attacker fill:#FF5722
+    user["👥 Users"] -->|"HTTP :5000"| web
+    admin_user["👨‍💼 Admins"] -->|"HTTP :8080"| pgadmin
+    
+    style web fill:#A8E6CF,stroke:#333,stroke-width:2px
+    style postgres fill:#B4C7E7,stroke:#333,stroke-width:2px
+    style pgadmin fill:#FFD3B6,stroke:#333,stroke-width:2px
+    style attacker fill:#FFAAA5,stroke:#333,stroke-width:2px
 ```
 
 ## 📋 Exploit Instructions
 
-> [!INFO] See [EXPLOIT_REFERENCE.md](/docs/EXPOIT_REFERENCE.md) for full instructions on how to exploit the application
+> [!INFO] 
+> See [EXPLOIT_REFERENCE.md](/docs/EXPOIT_REFERENCE.md) for full instructions on how to exploit the application
 
 ### 🔥 Quick SQL Injection Test
 
