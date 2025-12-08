@@ -12,9 +12,9 @@ services:
       - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
     networks:
       - typo-network
-  typo-payments:
+  web:
     build: .
-    container_name: typo-payments-demo
+    container_name: typo-web
     ports:
       - "5000:5000"
     env_file:

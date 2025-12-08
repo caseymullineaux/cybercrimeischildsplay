@@ -6,9 +6,7 @@ from flask import (
     request,
     redirect,
     url_for,
-    session,
     flash,
-    make_response,
 )
 from flask_login import (
     LoginManager,
@@ -18,7 +16,6 @@ from flask_login import (
     login_required,
     current_user,
 )
-from datetime import datetime
 from functools import wraps
 import os
 import hashlib
@@ -39,7 +36,7 @@ app = Flask(__name__)
 # WARNING: This is intentionally insecure for demonstration purposes
 app.secret_key = "insecure_secret_key_for_demo"
 app.config["SESSION_COOKIE_HTTPONLY"] = (
-    False  # Vulnerable: allows JavaScript to access cookies
+    False  
 )
 
 login_manager = LoginManager()
@@ -88,7 +85,6 @@ def load_user(user_id):
     return None
 
 
-# Admin required decorator
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
