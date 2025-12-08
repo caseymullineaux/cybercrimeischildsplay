@@ -58,12 +58,10 @@ graph TB
         
         web -->|"Connects to"| postgres
         pgadmin -->|"Manages"| postgres
-        attacker -.->|"Network Access"| web
-        attacker -.->|"Network Access"| postgres
+        attacker -.->|"HTTP"| web
+        postgres -.->|"Reverse Shell"| attacker 
     end
     
-    user["👥 Users"] -->|"HTTP :5000"| web
-    admin_user["👨‍💼 Admins"] -->|"HTTP :8080"| pgadmin
     
     style web fill:#A8E6CF,stroke:#333,stroke-width:2px
     style postgres fill:#B4C7E7,stroke:#333,stroke-width:2px
