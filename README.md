@@ -46,7 +46,7 @@ docker compose down -v && docker compose up --build -d
 | --- | --- |
 | `admin` | `password123` |
 
-## 🏗️ Infrastructure Architecture
+### Architecture
 
 ```mermaid
 graph TB
@@ -69,13 +69,84 @@ graph TB
     style attacker fill:#FFAAA5,stroke:#333,stroke-width:2px
 ```
 
-## 📋 Exploit Instructions
+## 🎓 Learning Path
 
-> [!INFO] 
-> See [EXPLOIT_REFERENCE.md](/docs/EXPOIT_REFERENCE.md) for full instructions on how to exploit the application
+Follow the tutorials in order (1 → 2 → 3) to build a solid foundation.
 
-### 🔥 Quick SQL Injection Test
+Focus on understanding the vulnerability patterns in each tutorial to learn what to avoid in your own applications.
 
-1. Login as Alice
-2. Go to Status page
-3. Try: `' OR 1=1 --` (see all payments from all users)
+---
+
+## 📋 Tutorial Index
+
+This repository includes comprehensive tutorials for learning SQL injection techniques:
+
+> [!WARNING]
+> **Educational Use Only:** These tutorials are designed for authorized security testing and educational purposes only. Never use these techniques against systems you don't own or have explicit permission to test.
+
+> [!TIP]
+> **Use the "View SQL Query" feature** on the search page to see how your injected input affects the actual SQL query being executed.
+
+### [1. Introduction to SQL Injection](./docs/1.%20INTRO%20TO%20SQL%20INJECTION.MD)
+
+**Difficulty:** Beginner  
+**Target:** Search page (`/search`)  
+**Time:** 30-45 minutes
+
+Learn the fundamentals of SQL injection through UNION-based attacks:
+- Identifying SQL injection vulnerabilities
+- Understanding UNION SELECT mechanics
+- Determining column counts with ORDER BY
+- Extracting database schema information
+- Retrieving sensitive data (PII, credit cards)
+- Gathering system information
+- Reading server files and directories
+
+**Key Techniques:**
+- Error-based detection
+- UNION SELECT queries
+- Information schema enumeration
+- PostgreSQL administrative functions
+
+---
+
+### [2. Blind SQL Injection](./docs/2.%20BLIND%20SQL%20INJECTION.md)
+
+**Difficulty:** Intermediate  
+**Target:** Status page (`/status`)  
+**Time:** 20-30 minutes
+
+Master boolean-based blind SQL injection when direct output isn't available:
+- Understanding TRUE/FALSE conditional logic
+- Character-by-character data extraction
+- Using SUBSTRING for precise data retrieval
+- Automating extraction with Python scripts
+- Cracking password hashes
+- Privilege escalation through credential theft
+
+**Key Techniques:**
+- Boolean-based blind injection
+- SUBSTRING enumeration
+- Automated exploitation scripts
+- Rainbow table hash cracking
+
+---
+
+### [3. Advanced Techniques](./docs/3.%20ADVANCED%20TECHNIQUES.md)
+
+**Difficulty:** Advanced  
+**Target:** Search page (`/search`)  
+**Time:** 15-20 minutes
+
+Escalate from database access to full system compromise:
+- Dumping environment variables and server configuration
+- Executing commands with COPY TO PROGRAM
+- Establishing reverse shell connections
+- Gaining remote code execution
+- Complete server takeover
+
+**Key Techniques:**
+- COPY TO PROGRAM exploitation
+- Reverse shell payloads
+- Remote command execution
+- Post-exploitation activities
